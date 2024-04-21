@@ -7,6 +7,7 @@
     ./programs/vim.nix
     ./programs/zsh.nix
     ./programs/tmux.nix
+    ./programs/lynx.nix
   ];
 
   home.username = "bcape";
