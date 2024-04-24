@@ -7,7 +7,6 @@
         plugin = gruvbox;
         extraConfig = ''
           set -g @tmux-gruvbox 'dark'
-
           source-file ${../cfg/tmux-gruvbox.conf}
         '';
       }
