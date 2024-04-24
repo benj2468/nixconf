@@ -6,8 +6,14 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = ["git" "thefuck"];
+      plugins = ["git" "thefuck" "tmux"];
       theme = "robbyrussell";
     };
+
+    initExtra = ''
+      ZSH_TMUX_AUTOSTART=true
+      ZSH_TMUX_FIXTERM=false
+      ZSH_TMUX_CONFIG=$HOME/.config/tmux/tmux.conf
+    '';
   };
 }

@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-{
-  home.packages = with pkgs; [ lynx ];
+{pkgs, ...}: {
+  home.packages = with pkgs; [lynx];
 
   programs.zsh.initExtra = ''
 

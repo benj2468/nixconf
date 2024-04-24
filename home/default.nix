@@ -15,7 +15,6 @@
 
   home.packages = with pkgs; [
     btop
-    tmux
     thefuck
     nodejs
     alejandra

@@ -73,6 +73,16 @@
 
   environment.variables.EDITOR = "vim";
 
+  fonts = {
+    fontDir.enable = true;
+    packages = with pkgs; [
+      hack-font
+      font-awesome
+      powerline-fonts
+      nerdfonts
+    ];
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
