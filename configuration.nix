@@ -5,6 +5,7 @@
   config,
   lib,
   pkgs,
+  options,
   ...
 }: {
   imports = [
@@ -18,7 +19,15 @@
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
-  networking.hostName = "nixos-vm"; # Define your hostname.
+  # With an existing `nix.nixPath` entry:
+  nix.nixPath =
+    # Prepend default nixPath values.
+    options.nix.nixPath.default
+    ++
+    # Append our nixpkgs-overlays.
+    ["nixpkgs-overlays=/etc/nixos/overlays-compat/"];
+
+  #   networking.hostName = "nixos-vm"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.

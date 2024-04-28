@@ -25,7 +25,7 @@
     utils,
     ...
   } @ inputs: let
-    overlay = import ./pkgs/overlay.nix;
+    overlay = import ./overlays;
 
     systemSpecific = utils.lib.eachDefaultSystem (
       system: let
@@ -41,13 +41,22 @@
   in
     systemSpecific
     // {
-      nixosConfigurations.nixos-vm = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
-          (import ./overlays.nix {
-            inherit inputs;
-            overlays = [overlay];
-          })
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.bcape = import ./home;
+            };
+          }
+
+          {
+            nixpkgs.overlays = [fenix.overlays.default overlay];
+          }
+
           ./configuration.nix
         ];
       };
