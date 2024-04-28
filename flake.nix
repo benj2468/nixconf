@@ -13,6 +13,8 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    utils.url = "github:numtide/flake-utils";
   };
 
   outputs = {
@@ -20,14 +22,34 @@
     nixpkgs,
     home-manager,
     fenix,
+    utils,
     ...
-  } @ inputs: {
-    nixosConfigurations.nixos-vm = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules = [
-        (import ./overlays.nix {inherit inputs;})
-        ./configuration.nix
-      ];
+  } @ inputs: let
+    overlay = import ./pkgs/overlay.nix;
+
+    systemSpecific = utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [overlay];
+        };
+      in {
+        packages = {inherit pkgs;};
+        overlays.default = overlay;
+      }
+    );
+  in
+    systemSpecific
+    // {
+      nixosConfigurations.nixos-vm = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          (import ./overlays.nix {
+            inherit inputs;
+            overlays = [overlay];
+          })
+          ./configuration.nix
+        ];
+      };
     };
-  };
 }

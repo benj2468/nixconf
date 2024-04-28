@@ -1,8 +1,13 @@
-{inputs}:
+{
+  inputs,
+  overlays,
+}:
 with inputs; {
-  nixpkgs.overlays = [
-    fenix.overlays.default
-  ];
+  nixpkgs.overlays =
+    [
+      fenix.overlays.default
+    ]
+    ++ overlays;
 
   imports = [
     home-manager.nixosModules.home-manager
