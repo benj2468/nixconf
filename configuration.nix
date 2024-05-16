@@ -64,20 +64,25 @@
     openssh.authorizedKeys.keyFiles = [./ssh/authorized_keys];
     shell = pkgs.zsh;
   };
-  programs.zsh.enable = true;
-
+  programs.zsh = {
+    enable = true;
+    shellAliases = {
+      rebuild = "sudo nixos-rebuild switch";
+    };
+  };
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim
     wget
     git
-    (fenix.complete.withComponents ["cargo" "clippy" "rust-src" "rustc" "rustfmt"])
+    (fenix.stable.withComponents ["cargo" "clippy" "rust-src" "rustc" "rustfmt"])
     rust-analyzer
     gcc
     neofetch
     clang-tools
     libclang
+    tree
   ];
 
   environment.variables.EDITOR = "vim";

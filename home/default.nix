@@ -4,7 +4,7 @@
   ...
 }: {
   imports = [
-    ./programs/vim.nix
+    ./programs/vim/default.nix
     ./programs/zsh.nix
     ./programs/tmux.nix
     ./programs/lynx.nix
@@ -18,6 +18,7 @@
     thefuck
     nodejs
     alejandra
+    silver-searcher
   ];
 
   home.stateVersion = "23.11";
