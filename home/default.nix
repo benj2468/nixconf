@@ -15,10 +15,13 @@
 
   home.packages = with pkgs; [
     btop
+    bat
     thefuck
     nodejs
     alejandra
     silver-searcher
+    glow
+    xsel
   ];
 
   home.stateVersion = "23.11";
