@@ -22,6 +22,7 @@
     silver-searcher
     glow
     xsel
+    python3
   ];
 
   home.stateVersion = "23.11";

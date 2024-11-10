@@ -1,4 +1,7 @@
 {pkgs, ...}: {
+
+  home.packages = with pkgs; [ cmake ];
+
   programs.vim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
@@ -20,16 +23,23 @@
       vim-airline
       vim-fugitive
       vim-nix
-      vim-clang-format
+      vim-cmake
       rust-vim
+      vim-autoformat
+      vim-floaterm
 
       # Themes
       gruvbox
       fzf-vim
+      vim-devicons
     ];
     extraConfig = ''
+
+      let mapleader = ";"
+
       colorscheme gruvbox
       set background=dark
+      set encoding=UTF-8
 
       "Set line numbers on by default
       set number
@@ -55,10 +65,10 @@
       nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
       " GoTo code navigation
-      nmap <silent> gd <Plug>(coc-definition)
-      nmap <silent> gy <Plug>(coc-type-definition)
-      nmap <silent> gi <Plug>(coc-implementation)
-      nmap <silent> gr <Plug>(coc-references)
+      nmap <silent> <leader>d <Plug>(coc-definition)
+      nmap <silent> <leader>y <Plug>(coc-type-definition)
+      nmap <silent> <leader>i <Plug>(coc-implementation)
+      nmap <silent> <leader>r <Plug>(coc-references)
 
       " Use K to show documentation in preview window
       nnoremap <silent> K :call ShowDocumentation()<CR>
@@ -76,6 +86,20 @@
 
       nmap <silent> <C-p> :Files<enter>
       nmap <silent> <C-f> :Ag<enter>
+
+      " Maps Buffer movements to leader
+      map <leader>n :bnext<cr>
+      map <leader>p :bprevious<cr>
+      map <leader>d :bdelete<cr>
+
+      " Map Window movements to leader
+      map <leader>h <c-w>h
+      map <leader>j <c-w>j
+      map <leader>k <c-w>k
+      map <leader>l <c-w>l
+
+      " Map autoformatted
+      noremap <leader>f :Autoformat<CR>
     '';
   };
 
