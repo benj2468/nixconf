@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
 
+    home = {
+      url = "git+file:./home";
+      flake = false;
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager?ref=release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,6 +28,7 @@
     home-manager,
     fenix,
     utils,
+    home,
     ...
   } @ inputs: let
     overlay = import ./overlays;
@@ -49,7 +55,12 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.bcape = import ./home;
+              users.bcape = { ... }: {
+                imports = [
+                  (import home)
+                  ./home.nix
+                ];
+              };
             };
           }
 
