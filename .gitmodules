@@ -1,0 +1,6 @@
+[submodule "home-manager"]
+	path = home-manager
+	url = git@github.com:benj2468/home-manager.git
+[submodule "home"]
+	path = home
+	url = git@github.com:benj2468/home-manager.git
