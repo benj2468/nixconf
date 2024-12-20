@@ -24,11 +24,11 @@
     "home": {
       "flake": false,
       "locked": {
-        "lastModified": 1734656099,
-        "narHash": "sha256-GxiCWAsv9kFXvmIPEy5BZ/bv/cZyE5dBK0pYCBzPFsM=",
+        "lastModified": 1734659477,
+        "narHash": "sha256-SLtKT96FNN4l5m3dOL8k2EiBGoEO01Q79V9yiMmFpSk=",
         "ref": "refs/heads/main",
-        "rev": "21636784354e54c9c20935eadd827e828617f51d",
-        "revCount": 7,
+        "rev": "d46b224e0a8cae4a7d82bd7aee2ca2f22087142e",
+        "revCount": 8,
         "type": "git",
         "url": "file:./home"
       },
