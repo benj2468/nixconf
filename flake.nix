@@ -24,61 +24,65 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    home-manager,
-    fenix,
-    utils,
-    home,
-    ...
-  } @ inputs: let
-    overlay = import ./overlays;
+  outputs =
+    { self
+    , nixpkgs
+    , home-manager
+    , fenix
+    , utils
+    , home
+    , treefmt-nix
+    , ...
+    } @ inputs:
+    let
+      overlay = import ./overlays;
 
-    systemSpecific = utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [overlay];
-        };
-
-# Eval the treefmt modules from ./treefmt.nix
-treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-
-
-
-      in {
-        packages = {inherit pkgs;};
-        overlays.default = overlay;
-        formatter = treefmtEval;
-      }
-      );
-  in
-  systemSpecific
-  // {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules = [
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users.bcape = { ... }: {
-              imports = [
-                (import home)
-                ./home.nix
-              ];
-            };
+      systemSpecific = utils.lib.eachDefaultSystem (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ overlay ];
           };
-        }
 
+          # Eval the treefmt modules from ./treefmt.nix
+          treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+
+
+
+        in
         {
-          nixpkgs.overlays = [fenix.overlays.default overlay];
+          packages = { inherit pkgs; };
+          overlays.default = overlay;
+          formatter = treefmtEval.config.build.wrapper;
         }
+      );
+    in
+    systemSpecific
+    // {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.bcape = { ... }: {
+                imports = [
+                  (import home)
+                  ./home.nix
+                ];
+              };
+            };
+          }
 
-        ./configuration.nix
-      ];
+          {
+            nixpkgs.overlays = [ fenix.overlays.default overlay ];
+          }
+
+          ./configuration.nix
+        ];
+      };
     };
-  };
 }

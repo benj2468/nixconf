@@ -1,9 +1,9 @@
-{
-  buildPythonPackage,
-  fetchPypi,
-  setuptools,
-  toml,
-  setuptools-scm,
+{ buildPythonPackage
+, fetchPypi
+, setuptools
+, toml
+, setuptools-scm
+,
 }:
 buildPythonPackage rec {
   pname = "ctypesgen";

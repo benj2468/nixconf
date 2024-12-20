@@ -1,12 +1,11 @@
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-{
-  config,
-  lib,
-  pkgs,
-  options,
-  ...
+{ config
+, lib
+, pkgs
+, options
+, ...
 }: {
   imports = [
     # Include the results of the hardware scan.
@@ -17,7 +16,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # With an existing `nix.nixPath` entry:
   nix.nixPath =
@@ -25,7 +24,7 @@
     options.nix.nixPath.default
     ++
     # Append our nixpkgs-overlays.
-    ["nixpkgs-overlays=/etc/nixos/overlays-compat/"];
+    [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
   #   networking.hostName = "nixos-vm"; # Define your hostname.
   # Pick only one of the below networking options.
@@ -60,8 +59,8 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bcape = {
     isNormalUser = true;
-    extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
-    openssh.authorizedKeys.keyFiles = [./ssh/authorized_keys];
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    openssh.authorizedKeys.keyFiles = [ ./ssh/authorized_keys ];
     shell = pkgs.zsh;
   };
 
@@ -78,7 +77,7 @@
     vim
     wget
     git
-    (fenix.stable.withComponents ["cargo" "clippy" "rust-src" "rustc" "rustfmt"])
+    (fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ])
     rust-analyzer
     gcc
     neofetch
