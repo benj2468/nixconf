@@ -60,7 +60,6 @@
   users.users.bcape = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    openssh.authorizedKeys.keyFiles = [ ./ssh/authorized_keys ];
     shell = pkgs.zsh;
   };
 
