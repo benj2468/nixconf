@@ -20,6 +20,8 @@
     };
 
     utils.url = "github:numtide/flake-utils";
+
+    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
   outputs = {
@@ -39,37 +41,44 @@
           inherit system;
           overlays = [overlay];
         };
+
+# Eval the treefmt modules from ./treefmt.nix
+treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+
+
+
       in {
         packages = {inherit pkgs;};
         overlays.default = overlay;
+        formatter = treefmtEval;
       }
-    );
+      );
   in
-    systemSpecific
-    // {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules = [
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.bcape = { ... }: {
-                imports = [
-                  (import home)
-                  ./home.nix
-                ];
-              };
+  systemSpecific
+  // {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      modules = [
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.bcape = { ... }: {
+              imports = [
+                (import home)
+                ./home.nix
+              ];
             };
-          }
+          };
+        }
 
-          {
-            nixpkgs.overlays = [fenix.overlays.default overlay];
-          }
+        {
+          nixpkgs.overlays = [fenix.overlays.default overlay];
+        }
 
-          ./configuration.nix
-        ];
-      };
+        ./configuration.nix
+      ];
     };
+  };
 }

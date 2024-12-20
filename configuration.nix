@@ -64,6 +64,7 @@
     openssh.authorizedKeys.keyFiles = [./ssh/authorized_keys];
     shell = pkgs.zsh;
   };
+
   programs.zsh = {
     enable = true;
     shellAliases = {
@@ -73,6 +74,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    busybox
     vim
     wget
     git
@@ -83,19 +85,11 @@
     clang-tools
     libclang
     tree
+    jq
+    yq
   ];
 
   environment.variables.EDITOR = "vim";
-
-  fonts = {
-    fontDir.enable = true;
-    packages = with pkgs; [
-      hack-font
-      font-awesome
-      powerline-fonts
-      nerdfonts
-    ];
-  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -114,11 +108,64 @@
   };
   services.sshd.enable = true;
 
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "admin+acme@cape.dev";
+  };
+
+  services.jenkins = {
+    enable = true;
+  };
+
+  services.grafana = {
+    enable = true;
+    settings = {
+      server = {
+        # Listening Address
+        http_addr = "127.0.0.1";
+        # and Port
+        http_port = 3000;
+        # Grafana needs to know on which domain and URL it's running
+        domain = "cape.dev";
+        root_url = "https://cape.dev/grafana/"; # Not needed if it is `https://your.domain/`
+        serve_from_sub_path = true;
+      };
+    };
+  };
+
+
+  services.nginx = {
+    enable = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    virtualHosts = {
+      "cape.dev" = {
+        forceSSL = true;
+        enableACME = true;
+        locations = {
+          "/grafana" = {
+            proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
+            proxyWebsockets = true;
+            recommendedProxySettings = true;
+          };
+        };
+      };
+      "jenkins.cape.dev" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8080/";
+          recommendedProxySettings = true;
+        };
+      };
+    };
+  };
+
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedUDPPorts = [ ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
