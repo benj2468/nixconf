@@ -60,7 +60,7 @@
     in
     systemSpecific
     // {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      nixosConfigurations."cape" = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
           home-manager.nixosModules.home-manager
