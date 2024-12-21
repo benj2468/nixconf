@@ -25,9 +25,12 @@
 
   networking = {
     hostName = "cape"; # Define your hostname.
+    hosts = {
+      "127.0.0.1" = [ "cape.dev" ];
+    };
     firewall = {
-      enable = true;
-      allowedTCPPorts = [ 80 443 ];
+      enable = false;
+      #allowedTCPPorts = [ 80 443 ];
     };
   };
 
@@ -136,12 +139,7 @@
   services.nginx = {
     enable = true;
     logError = "stderr debug";
-
-    recommendedGzipSettings = true;
-    recommendedOptimisation = true;
-    recommendedProxySettings = true;
-    recommendedTlsSettings = true;
-
+    statusPage = true;
     virtualHosts = {
       localhost = {
         locations = {
