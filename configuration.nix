@@ -23,16 +23,11 @@
     # Append our nixpkgs-overlays.
     [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "foo@bar.com";
-  };
-
   networking = {
     hostName = "cape"; # Define your hostname.
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 80 443 6443 ];
+      allowedTCPPorts = [ 80 443 ];
     };
   };
 
@@ -94,10 +89,8 @@
     enable = true;
     settings = {
       server = {
-        http_addr = "127.0.0.1";
+        http_addr = "0.0.0.0";
         http_port = 3000;
-        domain = "cape.dev";
-        root_url = "https://cape.dev/grafana/";
         serve_from_sub_path = true;
       };
     };
@@ -133,7 +126,7 @@
   };
 
   services.k3s = {
-    enable = true;
+    enable = false;
     role = "server";
     extraFlags = toString [
       "--debug"
@@ -142,11 +135,31 @@
 
   services.nginx = {
     enable = true;
+    logError = "stderr debug";
+
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+
     virtualHosts = {
-      "blog.cape.dev" = {
-        addSSL = true;
-        enableACME = true;
-        root = "/var/www/blog";
+      localhost = {
+        locations = {
+          "/" = {
+            return = "200 '<html><body>It works</body></html>'";
+            extraConfig = ''
+              default_type text/html;
+            '';
+          };
+          "/grafana" = {
+            proxyPass = "http://127.0.0.1:3000";
+            proxyWebsockets = true;
+            recommendedProxySettings = true;
+          };
+          "/jenkins" = {
+            proxyPass = "http://localhost:8080";
+          };
+        };
       };
     };
   };
