@@ -25,12 +25,39 @@
 
   networking = {
     hostName = "cape"; # Define your hostname.
-    hosts = {
-      "127.0.0.1" = [ "cape.dev" ];
-    };
     firewall = {
-      enable = false;
-      #allowedTCPPorts = [ 80 443 ];
+      enable = true;
+      logRefusedPackets = true;
+      allowedTCPPorts = [ 6443 81 443 ];
+      allowedUDPPorts = [ ];
+    };
+    nameservers = [ "100.100.100.100" "8.8.8.8" "1.1.1.1" ];
+    search = [ "cape.dev" "tail551489.ts.net" ];
+  };
+
+  services.tailscale.enable = true;
+
+  services.nginx = {
+    enable = true;
+    commonHttpConfig = ''
+      log_format myformat '$remote_addr - $remote_user [$time_local] '
+                        '"$request" $status $body_bytes_sent '
+                        '"$http_referer" "$http_user_agent"';
+    '';
+    defaultHTTPListenPort = 81;
+    virtualHosts = {
+      "server" = {
+        default = true;
+        locations."/grafana/" = {
+          proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+        };
+
+        locations."/jenkins/" = {
+          proxyPass = "http://127.0.0.1:8080";
+        };
+      };
     };
   };
 
@@ -40,7 +67,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bcape = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "docker" ];
     shell = pkgs.zsh;
   };
 
@@ -86,6 +113,7 @@
 
   services.jenkins = {
     enable = true;
+    prefix = "/jenkins";
   };
 
   services.grafana = {
@@ -94,6 +122,8 @@
       server = {
         http_addr = "0.0.0.0";
         http_port = 3000;
+        domain = "server";
+        root_url = "http://server:81/grafana/";
         serve_from_sub_path = true;
       };
     };
@@ -128,38 +158,14 @@
     };
   };
 
+  virtualisation.docker.enable = true;
+
   services.k3s = {
-    enable = false;
+    enable = true;
     role = "server";
     extraFlags = toString [
       "--debug"
     ];
-  };
-
-  services.nginx = {
-    enable = true;
-    logError = "stderr debug";
-    statusPage = true;
-    virtualHosts = {
-      localhost = {
-        locations = {
-          "/" = {
-            return = "200 '<html><body>It works</body></html>'";
-            extraConfig = ''
-              default_type text/html;
-            '';
-          };
-          "/grafana" = {
-            proxyPass = "http://127.0.0.1:3000";
-            proxyWebsockets = true;
-            recommendedProxySettings = true;
-          };
-          "/jenkins" = {
-            proxyPass = "http://localhost:8080";
-          };
-        };
-      };
-    };
   };
 
   system.stateVersion = "23.11"; # Did you read the comment?
