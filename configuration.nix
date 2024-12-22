@@ -29,8 +29,7 @@
     firewall = {
       enable = true;
       logRefusedPackets = true;
-      allowedTCPPorts = [ 6443 81 443 ];
-      allowedUDPPorts = [ ];
+      allowedTCPPorts = [ 6443 8080 443 80 ];
     };
     nameservers = [ "1.1.1.1" "8.8.8.8" "100.100.100.100" ];
     search = [ "tail551489.ts.net" ];
@@ -45,7 +44,7 @@
                         '"$request" $status $body_bytes_sent '
                         '"$http_referer" "$http_user_agent"';
     '';
-    defaultHTTPListenPort = 81;
+    defaultHTTPListenPort = 8080;
     virtualHosts = {
       "server" = {
         default = true;
@@ -56,7 +55,7 @@
         };
 
         locations."/jenkins/" = {
-          proxyPass = "http://127.0.0.1:8080";
+          proxyPass = "http://127.0.0.1:9009";
         };
       };
     };
@@ -114,6 +113,7 @@
 
   services.jenkins = {
     enable = true;
+    port = 9009;
     prefix = "/jenkins";
   };
 
