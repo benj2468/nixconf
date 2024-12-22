@@ -23,8 +23,17 @@
     # Append our nixpkgs-overlays.
     [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
+  age.secrets = {
+    rabin-dashboard = {
+      file = ./secrets/rabin-dashboard.age;
+      owner = "root";
+      group = "users";
+      mode = "400";
+    };
+  };
+
   networking = {
-    hostName = "cape"; # Define your hostname.
+    hostName = "rabin";
     useNetworkd = true;
     firewall = {
       enable = true;
@@ -65,7 +74,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bcape = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "docker" ];
+    extraGroups = [ "wheel" "docker" "users" ];
     shell = pkgs.zsh;
   };
 
@@ -159,6 +168,7 @@
 
   services.homepage-dashboard = {
     enable = true;
+    environmentFile = config.age.secrets.rabin-dashboard.path;
     settings = {
       title = "Cape Homepage";
     };
@@ -182,8 +192,8 @@
             widget = {
               type = "grafana";
               url = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
-              username = "admin";
-              password = "login";
+              username = "{{HOMEPAGE_VAR_GRAFANA_USERNAME}}";
+              password = "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}";
             };
           };
         }];

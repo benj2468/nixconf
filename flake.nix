@@ -19,6 +19,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     utils.url = "github:numtide/flake-utils";
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -32,6 +37,7 @@
     , utils
     , home
     , treefmt-nix
+    , agenix
     , ...
     } @ inputs:
     let
@@ -47,9 +53,6 @@
 
           # Eval the treefmt modules from ./treefmt.nix
           treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-
-
-
         in
         {
           packages = { inherit pkgs; };
@@ -60,7 +63,7 @@
     in
     systemSpecific
     // {
-      nixosConfigurations."cape" = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.rabin = nixpkgs.lib.nixosSystem rec {
         system = "aarch64-linux";
         modules = [
           home-manager.nixosModules.home-manager
@@ -79,9 +82,13 @@
 
           {
             nixpkgs.overlays = [ fenix.overlays.default overlay ];
+
+            environment.systemPackages = [ agenix.packages."${system}".default ];
           }
 
           ./configuration.nix
+
+          agenix.nixosModules.default
         ];
       };
     };
