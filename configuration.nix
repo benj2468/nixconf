@@ -49,7 +49,7 @@
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "server" = {
+      rabin = {
         default = true;
         locations."/grafana/" = {
           proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
@@ -127,11 +127,14 @@
   services.grafana = {
     enable = true;
     settings = {
+      panels = {
+        enable_alpha = true;
+      };
       server = {
         http_addr = "0.0.0.0";
         http_port = 3000;
-        domain = "server";
-        root_url = "http://server/grafana/";
+        domain = "rabin";
+        root_url = "http://rabin/grafana/";
         serve_from_sub_path = true;
       };
     };
@@ -188,7 +191,7 @@
         infra = [{
           grafana = {
             icon = "grafana.png";
-            href = "http://server/grafana/";
+            href = "http://rabin/grafana/";
             widget = {
               type = "grafana";
               url = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
