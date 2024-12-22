@@ -39,12 +39,6 @@
 
   services.nginx = {
     enable = true;
-    commonHttpConfig = ''
-      log_format myformat '$remote_addr - $remote_user [$time_local] '
-                        '"$request" $status $body_bytes_sent '
-                        '"$http_referer" "$http_user_agent"';
-    '';
-    defaultHTTPListenPort = 8080;
     virtualHosts = {
       "server" = {
         default = true;
@@ -160,14 +154,6 @@
   };
 
   virtualisation.docker.enable = true;
-
-  services.k3s = {
-    enable = true;
-    role = "server";
-    extraFlags = toString [
-      "--debug"
-    ];
-  };
 
   system.stateVersion = "23.11"; # Did you read the comment?
 }
