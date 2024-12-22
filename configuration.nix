@@ -25,14 +25,15 @@
 
   networking = {
     hostName = "cape"; # Define your hostname.
+    useNetworkd = true;
     firewall = {
       enable = true;
       logRefusedPackets = true;
       allowedTCPPorts = [ 6443 81 443 ];
       allowedUDPPorts = [ ];
     };
-    nameservers = [ "100.100.100.100" "8.8.8.8" "1.1.1.1" ];
-    search = [ "cape.dev" "tail551489.ts.net" ];
+    nameservers = [ "1.1.1.1" "8.8.8.8" "100.100.100.100" ];
+    search = [ "tail551489.ts.net" ];
   };
 
   services.tailscale.enable = true;
