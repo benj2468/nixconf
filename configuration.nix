@@ -51,6 +51,10 @@
         locations."/jenkins/" = {
           proxyPass = "http://127.0.0.1:9009";
         };
+
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8082";
+        };
       };
     };
   };
@@ -118,7 +122,7 @@
         http_addr = "0.0.0.0";
         http_port = 3000;
         domain = "server";
-        root_url = "http://server:81/grafana/";
+        root_url = "http://server/grafana/";
         serve_from_sub_path = true;
       };
     };
@@ -151,6 +155,40 @@
         firewallFilter = "-i br0 -p tcp -m tcp --dport 9100";
       };
     };
+  };
+
+  services.homepage-dashboard = {
+    enable = true;
+    settings = {
+      title = "Cape Homepage";
+    };
+
+    widgets = [
+      {
+        resources = {
+          cpu = true;
+          memory = true;
+          disk = "/";
+        };
+      }
+    ];
+
+    services = [
+      {
+        infra = [{
+          grafana = {
+            icon = "grafana.png";
+            href = "http://server/grafana/";
+            widget = {
+              type = "grafana";
+              url = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
+              username = "admin";
+              password = "login";
+            };
+          };
+        }];
+      }
+    ];
   };
 
   virtualisation.docker.enable = true;
