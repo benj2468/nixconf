@@ -5,7 +5,6 @@
 {
   default = pkgs.mkShell {
     name = "bcape-flake";
-    # Enable experimental features without having to specify the argument
     NIX_CONFIG = "experimental-features = nix-command flakes";
     nativeBuildInputs = with pkgs; [
       nix
