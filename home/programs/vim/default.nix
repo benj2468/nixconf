@@ -2,7 +2,7 @@
 
   home.packages = with pkgs; [ cmake ];
 
-  programs.vim = {
+  programs.neovim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
       nerdtree
@@ -26,17 +26,12 @@
       rust-vim
       vim-autoformat
       vim-floaterm
-
-      # Themes
-      gruvbox
       fzf-vim
-      vim-devicons
     ];
     extraConfig = ''
-
+      colorscheme catppuccin
       let mapleader = ";"
 
-      colorscheme gruvbox
       set background=dark
       set encoding=UTF-8
 
