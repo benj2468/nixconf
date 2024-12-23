@@ -1,16 +1,13 @@
 { pkgs, ... }: {
-
-  home.packages = [ pkgs.zsh ];
-
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
 
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "thefuck" "tmux" ];
-      theme = "robbyrussell";
+    shellAliases = {
+      nix-switch = "sudo nixos-rebuild switch";
+      home-switch = "home-manager switch --flake /home/bcape/.config/nixos#$(whoami)@$(hostname)";
+      jfu = "journalctl -fu";
     };
 
     initExtra = ''

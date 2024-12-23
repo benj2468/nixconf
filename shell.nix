@@ -1,7 +1,6 @@
 # Shell for bootstrapping flake-enabled nix and home-manager
 # Access development shell with  'nix develop' or (legacy) 'nix-shell'
-{
-  pkgs ? import <nixpkgs> {}
+{ pkgs ? import <nixpkgs> { }
 }:
 {
   default = pkgs.mkShell {

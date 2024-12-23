@@ -12,7 +12,13 @@
     ./programs/tmux.nix
     ./programs/lynx.nix
     ./programs/direnv.nix
+    ./programs/starship.nix
   ];
+
+  catppuccin = {
+    enable = true;
+    flavor = "mocha";
+  };
 
   home = {
     inherit username stateVersion;
