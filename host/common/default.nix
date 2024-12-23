@@ -2,50 +2,41 @@
 , lib
 , pkgs
 , options
+, hostname
+, inputs
 , ...
 }: {
   imports = [
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
+    ./boot.nix
   ];
-
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # With an existing `nix.nixPath` entry:
-  nix.nixPath =
-    # Prepend default nixPath values.
-    options.nix.nixPath.default
-    ++
-    # Append our nixpkgs-overlays.
-    [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
   age.secrets = {
     rabin-dashboard = {
-      file = ./secrets/rabin-dashboard.age;
+      file = "${inputs.self}/secrets/rabin-dashboard.age";
       owner = "root";
       group = "users";
       mode = "400";
     };
   };
 
+  # Some of this is only on rabin
   networking = {
-    hostName = "rabin";
+    hostName = hostname;
     useNetworkd = true;
+    useDHCP = true;
     firewall = {
       enable = true;
       logRefusedPackets = true;
       allowedTCPPorts = [ 6443 8080 443 80 ];
     };
     nameservers = [ "1.1.1.1" "8.8.8.8" "100.100.100.100" ];
+    # I think this should be a secret??
     search = [ "tail551489.ts.net" ];
   };
 
   services.tailscale.enable = true;
 
+  # Only on rabin
   services.nginx = {
     enable = true;
     virtualHosts = {
@@ -82,6 +73,7 @@
     enable = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch";
+      jfu = "journalctl -fu";
     };
   };
 
@@ -99,18 +91,10 @@
     tree
     jq
     yq
-
-    (wrapHelm kubernetes-helm {
-      plugins = with pkgs.kubernetes-helmPlugins; [
-        helm-diff
-        helm-git
-      ];
-    })
   ];
 
   environment.variables.EDITOR = "vim";
 
-  # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = true;
@@ -118,12 +102,14 @@
 
   services.sshd.enable = true;
 
+  # only on rabin
   services.jenkins = {
     enable = true;
     port = 9009;
     prefix = "/jenkins";
   };
 
+  # only on rabin
   services.grafana = {
     enable = true;
     settings = {
@@ -133,13 +119,14 @@
       server = {
         http_addr = "0.0.0.0";
         http_port = 3000;
-        domain = "rabin";
-        root_url = "http://rabin/grafana/";
+        domain = hostname;
+        root_url = "http://${hostname}/grafana/";
         serve_from_sub_path = true;
       };
     };
   };
 
+  # Only on rabin
   services.prometheus = {
     enable = true;
 
@@ -169,6 +156,7 @@
     };
   };
 
+  # only on rabin
   services.homepage-dashboard = {
     enable = true;
     environmentFile = config.age.secrets.rabin-dashboard.path;
@@ -191,7 +179,7 @@
         infra = [{
           grafana = {
             icon = "grafana.png";
-            href = "http://rabin/grafana/";
+            href = "http://${hostname}/grafana/";
             widget = {
               type = "grafana";
               url = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
@@ -204,5 +192,6 @@
     ];
   };
 
+  # TODO(bjc) Host dependent
   virtualisation.docker.enable = true;
 }

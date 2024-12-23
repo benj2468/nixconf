@@ -1,3 +1,5 @@
-final: prev: {
-  ctypesgen = prev.python3Packages.callPackage ./ctypesgen { };
+{
+  default = final: prev: {
+    ctypesgen = prev.python3Packages.callPackage ./ctypesgen { };
+  };
 }

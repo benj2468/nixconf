@@ -2,15 +2,10 @@
   description = "A simple NixOS flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-
-    home = {
-      url = "git+file:./home";
-      flake = false;
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
 
     home-manager = {
-      url = "github:nix-community/home-manager?ref=release-24.05";
+      url = "github:nix-community/home-manager?ref=release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -24,7 +19,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     utils.url = "github:numtide/flake-utils";
+
+    catppuccin.url = "github:catppuccin/nix";
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
@@ -35,20 +37,23 @@
     , home-manager
     , fenix
     , utils
-    , home
     , treefmt-nix
     , agenix
     , ...
-    } @ inputs:
+    }@inputs:
     let
-      overlay = import ./overlays;
+
+      libx = import ./lib {
+        inherit inputs;
+        inherit (self) outputs;
+        stateVersion = "24.11";
+      };
 
       systemSpecific = utils.lib.eachDefaultSystem (
         system:
         let
           pkgs = import nixpkgs {
             inherit system;
-            overlays = [ overlay ];
           };
 
           # Eval the treefmt modules from ./treefmt.nix
@@ -56,40 +61,24 @@
         in
         {
           packages = { inherit pkgs; };
-          overlays.default = overlay;
           formatter = treefmtEval.config.build.wrapper;
         }
       );
     in
     systemSpecific
     // {
-      nixosConfigurations.rabin = nixpkgs.lib.nixosSystem rec {
-        system = "aarch64-linux";
-        modules = [
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.bcape = { ... }: {
-                imports = [
-                  (import home)
-                  ./home.nix
-                ];
-              };
-            };
-          }
-
-          {
-            nixpkgs.overlays = [ fenix.overlays.default overlay ];
-
-            environment.systemPackages = [ agenix.packages."${system}".default ];
-          }
-
-          ./configuration.nix
-
-          agenix.nixosModules.default
-        ];
-      };
+      nixosConfigurations = libx.mkHosts [
+        {
+          hostname = "rabin";
+          system = "aarch64-linux";
+        }
+      ];
+      homeConfigurations = libx.mkHomes [
+        {
+          username = "bcape";
+          hosts = [ "rabin" ];
+        }
+      ];
+      overlays = import ./overlays;
     };
 }
