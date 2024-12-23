@@ -6,7 +6,7 @@
 
     shellAliases = {
       nix-switch = "sudo nixos-rebuild switch";
-      home-switch = "home-manager switch --flake /home/bcape/.config/nixos#$(whoami)@$(hostname)";
+      home-switch = "home-manager switch --flake /etc/nixos#$(whoami)@$(hostname)";
       jfu = "journalctl -fu";
     };
 
