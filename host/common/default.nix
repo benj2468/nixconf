@@ -21,6 +21,7 @@
       enable = true;
       logRefusedPackets = lib.mkDefault true;
     };
+    # TODO: Make a wireguard module for server and client
     nameservers = [ "100.100.100.100" "1.1.1.1" "8.8.8.8" ];
     # I think this should be a secret?
     search = [ "tail551489.ts.net" ];
@@ -29,6 +30,7 @@
   services.resolved.enable = false;
   services.dnsmasq = {
     enable = true;
+    # TODO: wireguard
     settings.server = [
       "100.100.100.100"
       "1.1.1.1"
@@ -36,6 +38,7 @@
     ];
   };
 
+  # TODO: remove when we migrate to wireguard
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "server";
@@ -95,14 +98,6 @@
         static_configs = [{
           targets = [ "localhost:${toString config.services.prometheus.exporters.node.port}" ];
         }];
-      }
-      {
-        job_name = "gitlab-runner";
-        static_configs = [
-          {
-            targets = [ "localhost:9252" ];
-          }
-        ];
       }
     ];
 

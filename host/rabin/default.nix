@@ -1,22 +1,14 @@
 { pkgs, inputs, hostname, config, ... }:
 {
-
-  imports = [
-    ../modules/gitlab.nix
-  ];
-
-  environment.systemPackages = with pkgs; [
-    gitlab-runner
-  ];
-
   age.secrets = {
     rabin-dashboard = {
       file = "${inputs.self}/secrets/${hostname}-dashboard.age";
       owner = "root";
       group = "users";
-      mode = "400";
     };
   };
+
+  haganah.gitlab.enable = true;
 
   networking = {
     firewall.allowedTCPPorts = [ 6443 443 80 ];
@@ -36,8 +28,8 @@
       rabin = {
         default = true;
 
-        locations."/grafana/" = {
-          proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
+        locations."/grafana/" = with config.services.grafana.settings.server; {
+          proxyPass = "http://${toString http_addr}:${toString http_port}";
           proxyWebsockets = true;
         };
 
