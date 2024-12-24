@@ -1,8 +1,12 @@
-{ inputs, hostname, config, ... }:
+{ pkgs, inputs, hostname, config, ... }:
 {
 
   imports = [
     ../modules/gitlab.nix
+  ];
+
+  environment.systemPackages = with pkgs; [
+    gitlab-runner
   ];
 
   age.secrets = {
@@ -31,29 +35,17 @@
 
       rabin = {
         default = true;
+
         locations."/grafana/" = {
           proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
           proxyWebsockets = true;
         };
-
-        locations."/jenkins/" = {
-          proxyPass = "http://127.0.0.1:9009";
-        };
-
-        #        locations."/gitlab/" = {
-        #          proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
-        #        };
 
         locations."/" = {
           proxyPass = "http://127.0.0.1:8082";
         };
       };
     };
-  };
-  services.jenkins = {
-    enable = true;
-    port = 9009;
-    prefix = "/jenkins";
   };
 
   services.homepage-dashboard = {
@@ -87,6 +79,34 @@
             };
           };
         }];
+      }
+      {
+        machines = [
+          {
+            rabin = {
+              description = "rabin";
+              icon = "tailscale.png";
+              href = "http://rabin";
+              widget = {
+                type = "tailscale";
+                deviceid = "{{HOMEPAGE_VAR_TAILSCALE_RABIN_DEVICE_ID}}";
+                key = "{{HOMEPAGE_VAR_TAILSCALE_AUTH_KEY}}";
+              };
+            };
+          }
+        ];
+        #dev = [{
+        #  gitlab = {
+        #    icon = "gitlab.png";
+        #    href = "http://git.${hostname}";
+        #    widget = {
+        #      type = "gitlab";
+        #      url = "http://git.${hostname}";
+        #      key = "{{HOMEPAGE_VAR_GITLAB_KEY}}";
+        #      user_id = "{{HOMEPAGE_VAR_GITLAB_USER}}";
+        #    };
+        #  };
+        #}];
       }
     ];
   };

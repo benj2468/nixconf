@@ -36,7 +36,11 @@
     ];
   };
 
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "server";
+    openFirewall = true;
+  };
 
   time.timeZone = "America/Los-Angelees";
 
@@ -91,6 +95,14 @@
         static_configs = [{
           targets = [ "localhost:${toString config.services.prometheus.exporters.node.port}" ];
         }];
+      }
+      {
+        job_name = "gitlab-runner";
+        static_configs = [
+          {
+            targets = [ "localhost:9252" ];
+          }
+        ];
       }
     ];
 
