@@ -10,5 +10,5 @@ in
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
 
   "rabin-gitlab-db.age".publicKeys = [ bcape gitlab rabin ];
-  "rabin-gitlab-runners-tokens.age".publicKeys = [ bcape gitlab rabin ];
+  "rabin-gitlab-runner-1-tokens.age".publicKeys = [ bcape gitlab rabin ];
 }

@@ -6,9 +6,8 @@
       owner = "gitlab";
       group = "gitlab";
     };
-    # TODO(bjc) Change this to the name of the shell one
-    gitlab-runners-tokens = {
-      file = "${inputs.self}/secrets/${hostname}-gitlab-runners-tokens.age";
+    gitlab-runner-1-tokens = {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-1-tokens.age";
       owner = "gitlab";
       group = "gitlab";
     };
@@ -20,7 +19,7 @@
     settings.log_level = "debug";
     services = {
       shell = {
-        authenticationTokenConfigFile = config.age.secrets.gitlab-runners-tokens.path;
+        authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1-tokens.path;
         executor = "shell";
       };
     };
