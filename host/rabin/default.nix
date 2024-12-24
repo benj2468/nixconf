@@ -1,9 +1,13 @@
 { inputs, hostname, config, ... }:
 {
 
+  imports = [
+    ../modules/gitlab.nix
+  ];
+
   age.secrets = {
     rabin-dashboard = {
-      file = "${inputs.self}/secrets/rabin-dashboard.age";
+      file = "${inputs.self}/secrets/${hostname}-dashboard.age";
       owner = "root";
       group = "users";
       mode = "400";
@@ -16,18 +20,29 @@
 
   services.nginx = {
     enable = true;
+    recommendedProxySettings = true;
     virtualHosts = {
+
+      "git.rabin" = {
+        locations."/" = {
+          proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+        };
+      };
+
       rabin = {
         default = true;
         locations."/grafana/" = {
           proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
           proxyWebsockets = true;
-          recommendedProxySettings = true;
         };
 
         locations."/jenkins/" = {
           proxyPass = "http://127.0.0.1:9009";
         };
+
+        #        locations."/gitlab/" = {
+        #          proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+        #        };
 
         locations."/" = {
           proxyPass = "http://127.0.0.1:8082";

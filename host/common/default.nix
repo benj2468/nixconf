@@ -14,7 +14,9 @@
   networking = {
     hostName = hostname;
     useNetworkd = lib.mkDefault true;
-    useDHCP = lib.mkDefault true;
+    interfaces.eth0 = {
+      useDHCP = true;
+    };
     firewall = {
       enable = true;
       logRefusedPackets = lib.mkDefault true;
@@ -22,6 +24,16 @@
     nameservers = [ "100.100.100.100" "1.1.1.1" "8.8.8.8" ];
     # I think this should be a secret?
     search = [ "tail551489.ts.net" ];
+  };
+
+  services.resolved.enable = false;
+  services.dnsmasq = {
+    enable = true;
+    settings.server = [
+      "100.100.100.100"
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
   };
 
   services.tailscale.enable = true;
@@ -42,6 +54,7 @@
     tree
     jq
     yq
+    agenix
   ];
 
   environment.variables.EDITOR = "vim";

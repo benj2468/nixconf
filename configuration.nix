@@ -48,6 +48,7 @@
 
   services.nginx = {
     enable = true;
+    recommendedProxySettings = true;
     virtualHosts = {
       rabin = {
         default = true;

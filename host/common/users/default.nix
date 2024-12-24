@@ -1,6 +1,13 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 {
   programs.zsh.enable = true;
+
+  users.users.gitlab = {
+    openssh.authorizedKeys.keys = config.users.users.bcape.openssh.authorizedKeys.keys;
+    home = lib.mkForce "/home/gitlab";
+    extraGroups = [ "wheel" ];
+    shell = lib.mkForce pkgs.zsh;
+  };
 
   users.users.bcape = {
     isNormalUser = true;

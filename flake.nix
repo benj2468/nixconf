@@ -78,6 +78,10 @@
           username = "bcape";
           hosts = [ "rabin" ];
         }
+        {
+          username = "gitlab";
+          hosts = [ "rabin" ];
+        }
       ];
       overlays = import ./overlays;
     };
