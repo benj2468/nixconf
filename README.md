@@ -1,4 +1,4 @@
-<p>
+<p align="center">
       <img width="250px" src=".github/images/flake-logo.png" alt="benj2468 flake logo">
 </p>
 
