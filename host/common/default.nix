@@ -14,7 +14,8 @@
   networking = {
     hostName = hostname;
     useNetworkd = lib.mkDefault true;
-    interfaces.eth0 = {
+    wireless.enable = true;
+    interfaces.ens160 = {
       useDHCP = true;
     };
     firewall = {
