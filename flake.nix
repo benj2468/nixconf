@@ -70,10 +70,14 @@
       nixosConfigurations = libx.mkHosts [
         {
           hostname = "rabin";
-          system = "aarch64-linux";
+          system = "x86_64-linux";
         }
       ];
       homeConfigurations = libx.mkHomes [
+        {
+          username = "admin";
+          hosts = [ "rabin" ];
+        }
         {
           username = "bcape";
           hosts = [ "rabin" ];

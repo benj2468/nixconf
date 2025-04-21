@@ -7,7 +7,11 @@
     home = lib.mkForce "/home/gitlab";
     extraGroups = [ "wheel" ];
     shell = lib.mkForce pkgs.zsh;
+    isSystemUser = true;
+    group = "gitlab";
   };
+
+  users.groups.gitlab = {};
 
   users.users.bcape = {
     isNormalUser = true;

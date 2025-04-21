@@ -7,17 +7,12 @@
 , ...
 }: {
   imports = [
-    ./boot.nix
     ./users
   ];
 
   networking = {
     hostName = hostname;
-    useNetworkd = lib.mkDefault true;
-    wireless.enable = true;
-    interfaces.ens160 = {
-      useDHCP = true;
-    };
+    networkmanager.enable = lib.mkDefault true;
     firewall = {
       enable = true;
       logRefusedPackets = lib.mkDefault true;
@@ -46,8 +41,6 @@
     openFirewall = true;
   };
 
-  time.timeZone = "America/Los-Angelees";
-
   environment.systemPackages = with pkgs; [
     busybox
     vim
@@ -63,6 +56,7 @@
     jq
     yq
     agenix
+    home-manager
   ];
 
   environment.variables.EDITOR = "vim";

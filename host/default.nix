@@ -7,6 +7,7 @@
   ];
 
   nixpkgs = {
+    config.allowUnfree = true;
     overlays = (with inputs; [
       # Overlays that we import
       agenix.overlays.default
