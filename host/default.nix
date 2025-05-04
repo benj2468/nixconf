@@ -2,8 +2,8 @@
 {
   imports = [
     (./. + "/${hostname}")
+    (./. + "/${hostname}/hardware-configuration.nix")
     ./modules
-    ./common
   ];
 
   nixpkgs.config.allowUnfree = true;

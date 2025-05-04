@@ -1,8 +1,10 @@
-{ pkgs, inputs, hostname, config, ... }:
+{ inputs, hostname, config, ... }:
 {
-  imports = [
-    ./configuration.nix
-  ];
+  haganah = {
+    enable = true;
+    users.enable = true;
+    graphical.enable = true;
+  };
 
   age.secrets = {
     rabin-dashboard = {
@@ -62,7 +64,7 @@
         {
           github = [{
             abbr = "GH";
-            href = "https://github.com/";
+            href = "https://github.com/benj2468/";
             icon = "github-light.png";
           }];
         }
@@ -116,9 +118,11 @@
     ];
   };
 
+  # Bootloader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
 
-  environment.systemPackages = with pkgs; [
-    vscode
-    postman
-  ];
+  # Set your time zone.
+  time.timeZone = "America/Los_Angeles";
 }

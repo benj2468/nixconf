@@ -1,5 +1,14 @@
 { inputs, localOverlays, stateVersion }:
 let lib = inputs.nixpkgs.lib; in rec {
+
+
+
+  libx = {
+    mkTieredEnableOption = parent: desc: (lib.mkEnableOption desc) // {
+      apply = x: parent.enable && x;
+    };
+  };
+
   mkHost =
     { hostname
     , system ? "x86_64-linux"
@@ -7,7 +16,7 @@ let lib = inputs.nixpkgs.lib; in rec {
       "${hostname}" = lib.nixosSystem {
         inherit system;
 
-        specialArgs = { inherit hostname inputs stateVersion; };
+        specialArgs = { inherit hostname inputs stateVersion libx; };
 
         modules = [
           inputs.agenix.nixosModules.default
