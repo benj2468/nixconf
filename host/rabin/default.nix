@@ -18,14 +18,19 @@
     firewall.allowedTCPPorts = [ 443 80 53 ];
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.68.69.57" = [ "rabin.haganah.net" "ntfy.rabin.haganah.net" ];
+      "100.68.69.57" = [ "haganah.net" "ntfy.haganah.net" "immich.haganah.net" ];
     };
+  };
+
+  services.immich = {
+    enable = true;
+    port = 2283;
   };
 
   services.ntfy-sh = {
     enable = true;
     settings = {
-      base-url = "http://ntfy.rabin.haganah.net";
+      base-url = "http://ntfy.haganah.net";
       upstream-base-url = "https://ntfy.sh";
     };
   };
@@ -47,10 +52,24 @@
         };
       };
 
-      "ntfy.rabin.haganah.net" = {
+      "ntfy.haganah.net" = {
         locations."/" = {
           proxyPass = "http://127.0.0.1:2586";
           proxyWebsockets = true;
+        };
+      };
+
+      "immich.haganah.net" = {
+        locations."/" = {
+          proxyPass = "http://[::1]:${toString config.services.immich.port}";
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+          extraConfig = ''
+            client_max_body_size 50000M;
+            proxy_read_timeout   600s;
+            proxy_send_timeout   600s;
+            send_timeout         600s;
+          '';
         };
       };
     };
@@ -119,6 +138,22 @@
           };
         }];
       }
+      # Looks like there was a breaking chang eto immich's API
+      # Probably need a v3
+      # {
+      #   home = [{
+      #     immich = {
+      #       icon = "immich.png";
+      #       href = "http://immich.haganah.net";
+      #       widget = {
+      #         type = "immich";
+      #         url = "http://immich.haganah.net";
+      #         key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
+      #         version = 2;
+      #       };
+      #     };
+      #   }];
+      # }
       {
         machines = [
           {
