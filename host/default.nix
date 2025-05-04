@@ -1,4 +1,4 @@
-{ lib, inputs, outputs, config, hostname, stateVersion, ... }:
+{ lib, inputs, config, hostname, stateVersion, ... }:
 {
   imports = [
     (./. + "/${hostname}")
@@ -6,19 +6,7 @@
     ./common
   ];
 
-  nixpkgs = {
-    config.allowUnfree = true;
-    overlays = (with inputs; [
-      # Overlays that we import
-      agenix.overlays.default
-      fenix.overlays.default
-    ]) ++ (with outputs;
-      [
-        # Overlays that we output
-        overlays.default
-      ]);
-  };
-
+  nixpkgs.config.allowUnfree = true;
 
   nix = {
     optimise.automatic = true;

@@ -1,4 +1,4 @@
-{ inputs, outputs, stateVersion }:
+{ inputs, localOverlays, stateVersion }:
 let lib = inputs.nixpkgs.lib; in rec {
   mkHost =
     { hostname
@@ -7,10 +7,17 @@ let lib = inputs.nixpkgs.lib; in rec {
       "${hostname}" = lib.nixosSystem {
         inherit system;
 
-        specialArgs = { inherit hostname inputs outputs stateVersion; };
+        specialArgs = { inherit hostname inputs stateVersion; };
 
         modules = [
           inputs.agenix.nixosModules.default
+          ({ ... }: {
+            nixpkgs.overlays = [
+              localOverlays.default
+              inputs.agenix.overlays.default
+              inputs.fenix.overlays.default
+            ];
+          })
           ../host
         ];
       };
@@ -19,23 +26,29 @@ let lib = inputs.nixpkgs.lib; in rec {
   mkHosts = hosts: lib.mergeAttrsList (map mkHost hosts);
 
 
-  mkHostHome = { username, hostname }:
-    let host = outputs.nixosConfigurations.${hostname}; in {
-      "${username}@${host.config.networking.hostName}" = inputs.home-manager.lib.homeManagerConfiguration {
-        inherit (host) pkgs;
-        extraSpecialArgs = {
-          inherit username inputs outputs stateVersion;
-        };
-
-        modules = [
-          inputs.catppuccin.homeManagerModules.catppuccin
-          ../home
-        ];
+  mkHostHome = { username, host }: {
+    "${username}@${host.config.networking.hostName}" = inputs.home-manager.lib.homeManagerConfiguration {
+      inherit (host) pkgs;
+      extraSpecialArgs = {
+        inherit username inputs stateVersion;
       };
+
+      modules = [
+        inputs.catppuccin.homeManagerModules.catppuccin
+        ({ ... }: {
+          nixpkgs.overlays = [
+            localOverlays.default
+            inputs.agenix.overlays.default
+            inputs.fenix.overlays.default
+          ];
+        })
+        ../home
+      ];
     };
+  };
 
 
-  mkHome = { username, hosts }: lib.mergeAttrsList (map (hostname: mkHostHome { inherit username hostname; }) hosts);
+  mkHome = { username, hosts }: lib.mergeAttrsList (map (host: mkHostHome { inherit username host; }) hosts);
 
   mkHomes = homes: lib.mergeAttrsList (map mkHome homes);
 }

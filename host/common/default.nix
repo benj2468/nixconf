@@ -1,9 +1,7 @@
 { config
 , lib
 , pkgs
-, options
 , hostname
-, inputs
 , ...
 }: {
   imports = [
@@ -17,16 +15,13 @@
       enable = true;
       logRefusedPackets = lib.mkDefault true;
     };
-    # TODO: Make a wireguard module for server and client
     nameservers = [ "100.100.100.100" "1.1.1.1" "8.8.8.8" ];
-    # I think this should be a secret?
     search = [ "tail551489.ts.net" ];
   };
 
   services.resolved.enable = false;
   services.dnsmasq = {
     enable = true;
-    # TODO: wireguard
     settings.server = [
       "100.100.100.100"
       "1.1.1.1"
@@ -34,7 +29,6 @@
     ];
   };
 
-  # TODO: remove when we migrate to wireguard
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "server";
@@ -43,6 +37,7 @@
 
   environment.systemPackages = with pkgs; [
     busybox
+    lm_sensors
     vim
     wget
     git
@@ -77,8 +72,8 @@
       server = {
         http_addr = "0.0.0.0";
         http_port = 3000;
-        domain = lib.mkDefault hostname;
-        root_url = lib.mkDefault "http://${hostname}/grafana/";
+        # domain = lib.mkDefault hostname;
+        root_url = lib.mkDefault "http://127.0.0.1/grafana/";
         serve_from_sub_path = true;
       };
     };

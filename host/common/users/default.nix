@@ -11,7 +11,7 @@
     group = "gitlab";
   };
 
-  users.groups.gitlab = {};
+  users.groups.gitlab = { };
 
   users.users.bcape = {
     isNormalUser = true;
