@@ -15,7 +15,7 @@
   };
 
   networking = {
-    firewall.allowedTCPPorts = [ 6443 443 80 53 ];
+    firewall.allowedTCPPorts = [ 443 80 53 ];
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
       "100.68.69.57" = [ "rabin.haganah.net" "ntfy.rabin.haganah.net" ];
@@ -26,6 +26,7 @@
     enable = true;
     settings = {
       base-url = "http://ntfy.rabin.haganah.net";
+      upstream-base-url = "https://ntfy.sh";
     };
   };
 
