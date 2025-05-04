@@ -18,14 +18,14 @@
     firewall.allowedTCPPorts = [ 6443 443 80 53 ];
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.68.69.57" = [ "rabin.haganah" "ntfy.rabin.haganah" ];
+      "100.68.69.57" = [ "rabin.haganah.net" "ntfy.rabin.haganah.net" ];
     };
   };
 
   services.ntfy-sh = {
     enable = true;
     settings = {
-      base-url = "http://ntfy.rabin.haganah";
+      base-url = "http://ntfy.rabin.haganah.net";
     };
   };
 
@@ -46,7 +46,7 @@
         };
       };
 
-      "ntfy.rabin.haganah" = {
+      "ntfy.rabin.haganah.net" = {
         locations."/" = {
           proxyPass = "http://127.0.0.1:2586";
           proxyWebsockets = true;
@@ -108,6 +108,7 @@
         infra = [{
           grafana = {
             icon = "grafana.png";
+            href = "http://rabin.haganah.net/grafana";
             widget = {
               type = "grafana";
               url = "http://localhost/grafana";
@@ -123,7 +124,7 @@
             rabin = {
               description = "rabin";
               icon = "tailscale.png";
-              href = "http://rabin.haganah";
+              href = "http://rabin.haganah.net";
               widget = {
                 type = "tailscale";
                 deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}";

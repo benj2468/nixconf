@@ -7,5 +7,3 @@
 
 ## 📋 Todos
 
-- [ ] Migrate to wireguard from tailscale
-
