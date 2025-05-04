@@ -21,7 +21,8 @@
 
     users.users.admin = {
       isNormalUser = true;
-      extraGroups = [ "networkmanager" "wheel" ];
+      extraGroups = [ "networkmanager" "wheel" "docker" ];
+      description = "System Administrator";
       shell = pkgs.zsh;
     };
   };
