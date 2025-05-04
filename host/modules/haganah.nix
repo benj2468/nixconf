@@ -15,22 +15,11 @@
     networking = {
       hostName = hostname;
       networkmanager.enable = lib.mkDefault true;
-      firewall = {
-        enable = true;
-        logRefusedPackets = lib.mkDefault true;
-      };
-      nameservers = [ "100.100.100.100" "1.1.1.1" "8.8.8.8" ];
-      search = [ "tail551489.ts.net" ];
     };
 
     services.resolved.enable = false;
     services.dnsmasq = {
       enable = true;
-      settings.server = [
-        "100.100.100.100"
-        "1.1.1.1"
-        "8.8.8.8"
-      ];
     };
 
     services.tailscale = {

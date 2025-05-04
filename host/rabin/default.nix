@@ -15,7 +15,18 @@
   };
 
   networking = {
-    firewall.allowedTCPPorts = [ 6443 443 80 ];
+    firewall.allowedTCPPorts = [ 6443 443 80 53 ];
+    hosts = {
+      # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
+      "100.68.69.57" = [ "rabin.haganah" "ntfy.rabin.haganah" ];
+    };
+  };
+
+  services.ntfy-sh = {
+    enable = true;
+    settings = {
+      base-url = "http://ntfy.rabin.haganah";
+    };
   };
 
   services.nginx = {
@@ -32,6 +43,13 @@
 
         locations."/" = {
           proxyPass = "http://127.0.0.1:8082";
+        };
+      };
+
+      "ntfy.rabin.haganah" = {
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:2586";
+          proxyWebsockets = true;
         };
       };
     };
@@ -105,7 +123,7 @@
             rabin = {
               description = "rabin";
               icon = "tailscale.png";
-              href = "http://rabin.tail551489.ts.net";
+              href = "http://rabin.haganah";
               widget = {
                 type = "tailscale";
                 deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}";
