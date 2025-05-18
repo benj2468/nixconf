@@ -11,6 +11,10 @@
   config = lib.mkIf config.haganah.enable {
 
     programs.zsh.enable = true;
+    programs.fzf = {
+      keybindings = true;
+      fuzzyCompletion = true;
+    };
 
     networking = {
       hostName = hostname;
