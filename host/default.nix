@@ -6,10 +6,11 @@
     ./modules
   ];
 
+  networking.hostName = hostname;
+
   nixpkgs.config.allowUnfree = true;
 
   nix = {
-
     optimise.automatic = true;
     settings = {
       auto-optimise-store = true;

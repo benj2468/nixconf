@@ -1,7 +1,6 @@
 { config
 , lib
 , pkgs
-, hostname
 , ...
 }: {
   options.haganah = {
@@ -17,7 +16,6 @@
     };
 
     networking = {
-      hostName = hostname;
       networkmanager.enable = lib.mkDefault true;
     };
 
