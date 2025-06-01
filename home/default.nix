@@ -17,11 +17,17 @@
   catppuccin = {
     enable = true;
     flavor = "mocha";
+    btop.enable = true;
+    starship.enable = true;
+    fzf.enable = true;
+    lazygit.enable = true;
+    nvim.enable = true;
+    tmux.enable = true;
+    zsh-syntax-highlighting.enable = true;
   };
 
   programs.fzf = {
-    keybindings = true;
-    fuzzyCompletion = true;
+    enableZshIntegration = true;
   };
 
   home = {

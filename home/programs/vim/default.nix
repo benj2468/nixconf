@@ -32,7 +32,6 @@
       fzf-vim
     ];
     extraConfig = ''
-      colorscheme catppuccin
       let mapleader = ";"
 
       set background=dark

@@ -43,7 +43,7 @@ let lib = inputs.nixpkgs.lib; in rec {
       };
 
       modules = [
-        inputs.catppuccin.homeManagerModules.catppuccin
+        inputs.catppuccin.homeModules.catppuccin
         ({ ... }: {
           nixpkgs.overlays = [
             localOverlays.default

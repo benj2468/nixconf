@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [ lynx ];
 
-  programs.zsh.initExtra = ''
+  programs.zsh.initContent = ''
 
     function mkUrl () {
       local search=$@

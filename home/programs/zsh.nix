@@ -10,7 +10,7 @@
       jfu = "journalctl -fu";
     };
 
-    initExtra = ''
+    initContent = ''
       ZSH_TMUX_AUTOSTART=true
       ZSH_TMUX_FIXTERM=false
       ZSH_TMUX_CONFIG=$HOME/.config/tmux/tmux.conf
