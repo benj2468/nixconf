@@ -19,6 +19,11 @@
     flavor = "mocha";
   };
 
+  programs.fzf = {
+    keybindings = true;
+    fuzzyCompletion = true;
+  };
+
   home = {
     inherit username stateVersion;
     homeDirectory = "/home/${username}";
