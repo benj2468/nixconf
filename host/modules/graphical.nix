@@ -10,7 +10,6 @@ in {
 
     environment.systemPackages = with pkgs; [
       vscode
-      postman
     ];
 
     programs.firefox.enable = true;

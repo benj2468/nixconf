@@ -1,10 +1,19 @@
-{ inputs, hostname, config, ... }:
+{ inputs, hostname, config, pkgs, ... }:
 {
   haganah = {
     enable = true;
     users.enable = true;
     graphical.enable = true;
   };
+
+  fileSystems."/mnt/foobar" = {
+    device = "nas.haganah.net:/mnt/Pool1/foobar";
+    fsType = "nfs";
+  };
+
+  environment.systemPackages = with pkgs; [
+    virt-manager
+  ];
 
   age.secrets = {
     rabin-dashboard = {
@@ -15,10 +24,32 @@
   };
 
   networking = {
+
     firewall.allowedTCPPorts = [ 443 80 53 ];
+
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
       "100.68.69.57" = [ "haganah.net" "ntfy.haganah.net" "immich.haganah.net" ];
+      "100.107.83.65" = [ "nas.haganah.net" ];
+    };
+
+    nat = {
+      enable = true;
+      internalInterfaces = [ "br0" ];
+      internalIPs = [ "192.168.184.0/14" ];
+    };
+
+    bridges = {
+      br0 = {
+        interfaces = [ ];
+      };
+    };
+
+    interfaces = {
+      br0 = {
+        useDHCP = false;
+        ipv4.addresses = [{ address = "192.168.184.1"; prefixLength = 24; }];
+      };
     };
   };
 
@@ -171,6 +202,14 @@
         ];
       }
     ];
+  };
+
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+    };
   };
 
   # Bootloader.

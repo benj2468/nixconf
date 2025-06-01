@@ -48,6 +48,7 @@
       jq
       yq
       agenix
+      cachix
       home-manager
     ];
 
