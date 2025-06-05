@@ -1,6 +1,6 @@
 { pkgs, ... }: {
 
-  home.packages = with pkgs; [ cmake ];
+  home.packages = with pkgs; [ cmake nixd ];
 
   programs.neovim = {
     enable = true;
@@ -99,5 +99,5 @@
     '';
   };
 
-  home.file.".vim/coc-settings.json".text = builtins.readFile ./configs/coc-settings.json;
+  home.file.".config/nvim/coc-settings.json".text = builtins.readFile ./configs/coc-settings.json;
 }
