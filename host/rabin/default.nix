@@ -56,6 +56,9 @@
   services.immich = {
     enable = true;
     port = 2283;
+    environment = {
+      IMMICH_TELEMETRY_INCLUDE = "all";
+    };
   };
 
   services.ntfy-sh = {
@@ -169,22 +172,20 @@
           };
         }];
       }
-      # Looks like there was a breaking chang eto immich's API
-      # Probably need a v3
-      # {
-      #   home = [{
-      #     immich = {
-      #       icon = "immich.png";
-      #       href = "http://immich.haganah.net";
-      #       widget = {
-      #         type = "immich";
-      #         url = "http://immich.haganah.net";
-      #         key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
-      #         version = 2;
-      #       };
-      #     };
-      #   }];
-      # }
+      {
+        home = [{
+          immich = {
+            icon = "immich.png";
+            href = "http://immich.haganah.net";
+            widget = {
+              type = "immich";
+              url = "http://immich.haganah.net";
+              key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
+              version = 2;
+            };
+          };
+        }];
+      }
       {
         machines = [
           {
