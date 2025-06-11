@@ -1,4 +1,12 @@
 {
   "diagnostic.virtualText": true,
-  "diagnostic.virtualTextCurrentLineOnly": false
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "languageserver": {
+    "nix": {
+      "command": "nixd",
+      "filetypes": [
+        "nix"
+      ]
+    }
+  }
 }
