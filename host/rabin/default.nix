@@ -6,11 +6,6 @@
     graphical.enable = true;
   };
 
-  fileSystems."/mnt/foobar" = {
-    device = "nas.haganah.net:/mnt/Pool1/foobar";
-    fsType = "nfs";
-  };
-
   environment.systemPackages = with pkgs; [
     virt-manager
   ];

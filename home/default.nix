@@ -9,7 +9,6 @@
     ./programs/vim/default.nix
     ./programs/zsh.nix
     ./programs/tmux.nix
-    ./programs/lynx.nix
     ./programs/direnv.nix
     ./programs/starship.nix
   ];
