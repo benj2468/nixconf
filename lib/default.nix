@@ -11,12 +11,13 @@ let lib = inputs.nixpkgs.lib; in rec {
 
   mkHost =
     { hostname
+    , configname ? hostname
     , system ? "x86_64-linux"
     }: {
       "${hostname}" = lib.nixosSystem {
         inherit system;
 
-        specialArgs = { inherit hostname inputs stateVersion libx; };
+        specialArgs = { inherit hostname configname inputs stateVersion libx; };
 
         modules = [
           inputs.agenix.nixosModules.default

@@ -36,7 +36,7 @@
 
   home = {
     inherit username stateVersion;
-    homeDirectory = "/home/${username}";
+    homeDirectory = "/${if pkgs.system == "aarch64-darwin" then "Users" else "home"}/${username}";
     packages = with pkgs; [
       btop
       bat
@@ -49,6 +49,7 @@
       python3
       lazygit
       nix-output-monitor
+      cachix
     ];
   };
 

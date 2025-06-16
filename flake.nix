@@ -61,6 +61,16 @@
               system = "x86_64-linux";
             }
             {
+              hostname = "generic-aarch64-linux";
+              configname = "generic";
+              system = "aarch64-linux";
+            }
+            {
+              hostname = "generic-aarch64-darwin";
+              configname = "generic";
+              system = "aarch64-darwin";
+            }
+            {
               hostname = "rabin";
               system = "x86_64-linux";
             }
@@ -72,7 +82,7 @@
             }
             {
               username = "bcape";
-              hosts = [ nixosConfigurations.generic nixosConfigurations.rabin ];
+              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin ];
             }
           ];
           overlays = localOverlays;

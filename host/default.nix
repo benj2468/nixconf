@@ -1,8 +1,8 @@
-{ lib, inputs, config, hostname, stateVersion, ... }:
+{ lib, inputs, config, hostname, configname, stateVersion, ... }:
 {
   imports = [
-    (./. + "/${hostname}")
-    (./. + "/${hostname}/hardware-configuration.nix")
+    (./. + "/${configname}")
+    (./. + "/${configname}/hardware-configuration.nix")
     ./modules
   ];
 
