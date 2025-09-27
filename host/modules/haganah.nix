@@ -148,12 +148,6 @@
             targets = [ "localhost:${toString config.services.prometheus.exporters.node.port}" ];
           }];
         }
-        {
-          job_name = "immich";
-          static_configs = [{
-            targets = [ "localhost:8081" "localhost:8082" ];
-          }];
-        }
       ];
 
       exporters = {

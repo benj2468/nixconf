@@ -24,8 +24,7 @@
 
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.68.69.57" = [ "haganah.net" "ntfy.haganah.net" "immich.haganah.net" ];
-      "100.107.83.65" = [ "nas.haganah.net" ];
+      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" ];
     };
 
     nat = {
@@ -168,20 +167,6 @@
         }];
       }
       {
-        home = [{
-          immich = {
-            icon = "immich.png";
-            href = "http://immich.haganah.net";
-            widget = {
-              type = "immich";
-              url = "http://immich.haganah.net";
-              key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
-              version = 2;
-            };
-          };
-        }];
-      }
-      {
         machines = [
           {
             rabin = {
@@ -209,9 +194,8 @@
   };
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";

@@ -1,6 +1,6 @@
 let
   admin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIuNWcOuPAj6eArZ2t513v7FoTRJq9gOvYKRwzXuzRsp";
-  rabin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINYMenqlLPuRmlCEwRPNlFq74ME7oPi6imEBvi5Gc6d3";
+  rabin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAeofWvYHMVo+FKERUYbIpTsWzFP3EJ7j20bsc9pwByi";
 
   users = [ admin ];
 in
