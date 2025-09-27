@@ -83,6 +83,7 @@
 
   services.homepage-dashboard = {
     enable = true;
+    allowedHosts = "*";
     environmentFile = config.age.secrets.rabin-dashboard.path;
     settings = {
       title = "Cape Homepage";
@@ -154,7 +155,7 @@
               widget = {
                 type = "tailscale";
                 deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}";
-                key = "{{HOMEPAGE_VAR_TAILSCALE_AUTH_KEY}}";
+                key = "{{HOMEPAGE_VAR_TAILSCALE_API_KEY}}";
               };
             };
           }
