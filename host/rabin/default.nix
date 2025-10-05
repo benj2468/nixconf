@@ -1,4 +1,4 @@
-{ inputs, hostname, config, ... }:
+{ inputs, hostname, config, pkgs, ... }:
 {
   haganah = {
     enable = true;
@@ -17,6 +17,11 @@
       owner = "root";
       group = "users";
     };
+    rabin-gitlab-init-root-password = {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-init-root-password.age";
+      owner = "gitlab";
+      group = "gitlab";
+    };
   };
 
   networking = {
@@ -25,7 +30,7 @@
 
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "jenkins.haganah.net" ];
+      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "jenkins.haganah.net" "git.haganah.net" ];
     };
   };
 
@@ -50,6 +55,24 @@
     enable = true;
     port = 8084;
   };
+
+
+  services.gitlab = {
+    enable = true;
+    databasePasswordFile = pkgs.writeText "dbPassword" "24HKq$LnVsHqExYL";
+    initialRootPasswordFile = config.age.secrets.rabin-gitlab-init-root-password.path;
+    secrets = {
+      secretFile = pkgs.writeText "secret" "Aig5zaic";
+      otpFile = pkgs.writeText "otpsecret" "Riew9mue";
+      dbFile = pkgs.writeText "dbsecret" "we2quaeZ";
+      jwsFile = pkgs.runCommand "oidcKeyBase" { } "${pkgs.openssl}/bin/openssl genrsa 2048 > $out";
+      activeRecordSaltFile = pkgs.writeText "salt" "5n*FfqwjVCQXdYa^";
+      activeRecordPrimaryKeyFile = pkgs.writeText "key" "x%8wKLT1pK@aq9Qw";
+      activeRecordDeterministicKeyFile = pkgs.writeText "key" "j&eekrQB!335XpvK";
+    };
+  };
+
+  services.openssh.enable = true;
 
   services.nginx = {
     enable = true;
@@ -89,6 +112,12 @@
           "/" = {
             proxyPass = "http://127.0.0.1:8084";
           };
+        };
+      };
+
+      "git.haganah.net" = {
+        locations."/" = {
+          proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
         };
       };
     };
@@ -154,6 +183,18 @@
               url = "http://localhost/grafana";
               username = "{{HOMEPAGE_VAR_GRAFANA_USERNAME}}";
               password = "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}";
+            };
+          };
+        }
+        {
+          gitlab = {
+            icon = "gitlab.png";
+            href = "http://git.haganah.net";
+            widget = {
+              type = "gitlab";
+              url = "http://git.haganah.net";
+              key = "{{HOMEPAGE_VAR_GITLAB_API_KEY}}";
+              user_id = "1";
             };
           };
         }];
