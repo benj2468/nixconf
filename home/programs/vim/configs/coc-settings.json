@@ -9,7 +9,9 @@
       "filetypes": [
         "nix"
       ],
-      "args": ["--inlay-hints=true"]
+      "args": [
+        "--inlay-hints=true"
+      ]
     }
   }
 }

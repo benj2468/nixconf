@@ -111,7 +111,6 @@
             jsonfmt.enable = true;
             nixpkgs-fmt.enable = true;
             shellcheck.enable = true;
-            ruff.enable = true;
             deadnix.enable = true;
           };
 

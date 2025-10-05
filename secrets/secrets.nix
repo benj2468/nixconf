@@ -7,4 +7,5 @@ let
 in
 {
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
+  "rabin-traccar.age".publicKeys = users ++ [ rabin ];
 }
