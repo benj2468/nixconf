@@ -22,6 +22,11 @@
       owner = "gitlab";
       group = "gitlab";
     };
+    rabin-gitlab-default= {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-default.age";
+      owner = "gitlab";
+      group = "gitlab";
+    };
   };
 
   networking = {
@@ -30,7 +35,7 @@
 
     hosts = {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "jenkins.haganah.net" "git.haganah.net" ];
+      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" ];
     };
   };
 
@@ -51,16 +56,22 @@
     };
   };
 
-  services.jenkins = {
+  services.gitlab-runner = {
     enable = true;
-    port = 8084;
+    services = {
+      default = {
+        dockerImage = "nixos/nix";
+        dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
+        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-default.path;
+      };
+    };
   };
-
-
   services.gitlab = {
     enable = true;
     databasePasswordFile = pkgs.writeText "dbPassword" "24HKq$LnVsHqExYL";
     initialRootPasswordFile = config.age.secrets.rabin-gitlab-init-root-password.path;
+    host = "git.haganah.net";
+    port = 80;
     secrets = {
       secretFile = pkgs.writeText "secret" "Aig5zaic";
       otpFile = pkgs.writeText "otpsecret" "Riew9mue";
@@ -103,14 +114,6 @@
           "/" = {
             proxyPass = "http://127.0.0.1:8083";
             proxyWebsockets = true;
-          };
-        };
-      };
-
-      "jenkins.haganah.net" = {
-        locations = {
-          "/" = {
-            proxyPass = "http://127.0.0.1:8084";
           };
         };
       };
@@ -186,18 +189,18 @@
             };
           };
         }
-        {
-          gitlab = {
-            icon = "gitlab.png";
-            href = "http://git.haganah.net";
-            widget = {
-              type = "gitlab";
-              url = "http://git.haganah.net";
-              key = "{{HOMEPAGE_VAR_GITLAB_API_KEY}}";
-              user_id = "1";
+          {
+            gitlab = {
+              icon = "gitlab.png";
+              href = "http://git.haganah.net";
+              widget = {
+                type = "gitlab";
+                url = "http://git.haganah.net";
+                key = "{{HOMEPAGE_VAR_GITLAB_API_KEY}}";
+                user_id = "1";
+              };
             };
-          };
-        }];
+          }];
       }
       {
         machines = [
