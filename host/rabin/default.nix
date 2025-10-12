@@ -38,9 +38,9 @@
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
-    hosts = {
+    hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" ]; in {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.73.51.55" = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" ];
+      "100.73.51.55" = localhosts;
     };
   };
 
@@ -82,6 +82,20 @@
     initialRootPasswordFile = config.age.secrets.rabin-gitlab-init-root-password.path;
     host = "git.haganah.net";
     port = 80;
+    extraConfig = {
+      monitoring = {
+        sidekiq_exporter = {
+          enabled = true;
+          address = "localhost";
+          port = 3807;
+        };
+        web_exporter = {
+          enabled = true;
+          address = "localhost";
+          port = 9168;
+        };
+      };
+    };
     secrets = {
       secretFile = pkgs.writeText "secret" "Aig5zaic";
       otpFile = pkgs.writeText "otpsecret" "Riew9mue";
@@ -92,6 +106,27 @@
       activeRecordDeterministicKeyFile = pkgs.writeText "key" "j&eekrQB!335XpvK";
     };
   };
+
+  services.prometheus.scrapeConfigs = [
+    {
+      job_name = "gitaly";
+      static_configs = [{
+        targets = [ "localhost:9236" ];
+      }];
+    }
+    {
+      job_name = "gitlab";
+      static_configs = [{
+        targets = [ "localhost:9168" ];
+      }];
+    }
+    {
+      job_name = "sidekiq";
+      static_configs = [{
+        targets = [ "localhost:3807" ];
+      }];
+    }
+  ];
 
   services.openssh.enable = true;
 

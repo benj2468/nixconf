@@ -149,7 +149,7 @@
           }];
         }
         {
-          job_name  = "nginx";
+          job_name = "nginx";
           static_configs = [{
             targets = [ "localhost:${toString config.services.prometheus.exporters.nginx.port}" ];
           }];

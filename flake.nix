@@ -96,6 +96,8 @@
           ];
         };
 
+        legacyPackages = pkgs;
+
         treefmt = {
 
           # Used to find the project root
