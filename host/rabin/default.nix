@@ -95,6 +95,7 @@
 
   services.openssh.enable = true;
 
+  services.prometheus.exporters.nginx.enable = true;
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
@@ -105,6 +106,14 @@
         locations."/grafana/" = with config.services.grafana.settings.server; {
           proxyPass = "http://127.0.0.1:3000";
           proxyWebsockets = true;
+        };
+
+        locations."/nginx_status" = {
+          extraConfig = ''
+            stub_status on;
+            access_log off;
+            allow 127.0.0.1;
+          '';
         };
 
         locations."/" = {
@@ -190,7 +199,7 @@
         infra = [{
           grafana = {
             icon = "grafana.png";
-            href = "http://rabin.haganah.net/grafana";
+            href = "http://haganah.net/grafana";
             widget = {
               type = "grafana";
               url = "http://localhost/grafana";
@@ -218,7 +227,7 @@
             rabin = {
               description = "rabin";
               icon = "tailscale.png";
-              href = "http://rabin.haganah.net";
+              href = "http://haganah.net";
               widget = {
                 type = "tailscale";
                 deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}";
