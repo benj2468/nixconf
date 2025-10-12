@@ -1,9 +1,10 @@
-{ inputs, hostname, config, pkgs, ... }:
+{ inputs, hostname, config, ... }:
 {
   haganah = {
     enable = true;
     users.enable = true;
     graphical.enable = true;
+    gitlab.enable = true;
   };
 
   age.secrets = {
@@ -16,21 +17,6 @@
       file = "${inputs.self}/secrets/${hostname}-traccar.age";
       owner = "root";
       group = "users";
-    };
-    rabin-gitlab-init-root-password = {
-      file = "${inputs.self}/secrets/${hostname}-gitlab-init-root-password.age";
-      owner = "gitlab";
-      group = "gitlab";
-    };
-    rabin-gitlab-runner-1 = {
-      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-1.age";
-      owner = "gitlab";
-      group = "gitlab";
-    };
-    rabin-gitlab-runner-2 = {
-      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-2.age";
-      owner = "gitlab";
-      group = "gitlab";
     };
   };
 
@@ -60,75 +46,6 @@
       webPort = "8083";
     };
   };
-
-  services.gitlab-runner = {
-    enable = true;
-    services = {
-      default = {
-        dockerImage = "nixos/nix";
-        dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
-        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-runner-1.path;
-      };
-      runner-2 = {
-        dockerImage = "nixos/nix";
-        dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
-        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-runner-2.path;
-      };
-    };
-  };
-  services.gitlab = {
-    enable = true;
-    databasePasswordFile = pkgs.writeText "dbPassword" "24HKq$LnVsHqExYL";
-    initialRootPasswordFile = config.age.secrets.rabin-gitlab-init-root-password.path;
-    host = "git.haganah.net";
-    port = 80;
-    extraConfig = {
-      monitoring = {
-        sidekiq_exporter = {
-          enabled = true;
-          address = "localhost";
-          port = 3807;
-        };
-        web_exporter = {
-          enabled = true;
-          address = "localhost";
-          port = 9168;
-        };
-      };
-    };
-    secrets = {
-      secretFile = pkgs.writeText "secret" "Aig5zaic";
-      otpFile = pkgs.writeText "otpsecret" "Riew9mue";
-      dbFile = pkgs.writeText "dbsecret" "we2quaeZ";
-      jwsFile = pkgs.runCommand "oidcKeyBase" { } "${pkgs.openssl}/bin/openssl genrsa 2048 > $out";
-      activeRecordSaltFile = pkgs.writeText "salt" "5n*FfqwjVCQXdYa^";
-      activeRecordPrimaryKeyFile = pkgs.writeText "key" "x%8wKLT1pK@aq9Qw";
-      activeRecordDeterministicKeyFile = pkgs.writeText "key" "j&eekrQB!335XpvK";
-    };
-  };
-
-  services.prometheus.scrapeConfigs = [
-    {
-      job_name = "gitaly";
-      static_configs = [{
-        targets = [ "localhost:9236" ];
-      }];
-    }
-    {
-      job_name = "gitlab";
-      static_configs = [{
-        targets = [ "localhost:9168" ];
-      }];
-    }
-    {
-      job_name = "sidekiq";
-      static_configs = [{
-        targets = [ "localhost:3807" ];
-      }];
-    }
-  ];
-
-  services.openssh.enable = true;
 
   services.prometheus.exporters.nginx.enable = true;
   services.nginx = {

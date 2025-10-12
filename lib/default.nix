@@ -1,9 +1,6 @@
 { inputs, localOverlays, stateVersion }:
 let lib = inputs.nixpkgs.lib; in rec {
-
-
-
-  libx = {
+  libx = lib // {
     mkTieredEnableOption = parent: desc: (lib.mkEnableOption desc) // {
       apply = x: parent.enable && x;
     };
@@ -25,7 +22,6 @@ let lib = inputs.nixpkgs.lib; in rec {
             nixpkgs.overlays = [
               localOverlays.default
               inputs.agenix.overlays.default
-              inputs.fenix.overlays.default
             ];
           })
           ../host
@@ -49,7 +45,6 @@ let lib = inputs.nixpkgs.lib; in rec {
           nixpkgs.overlays = [
             localOverlays.default
             inputs.agenix.overlays.default
-            inputs.fenix.overlays.default
           ];
         })
         ../home

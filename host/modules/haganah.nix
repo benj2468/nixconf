@@ -32,12 +32,8 @@
       vim
       wget
       git
-      (fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ])
-      rust-analyzer
       gcc
       neofetch
-      clang-tools
-      libclang
       tree
       jq
       yq

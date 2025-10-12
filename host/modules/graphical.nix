@@ -1,4 +1,4 @@
-{ lib, libx, config, pkgs, ... }:
+{ libx, config, pkgs, ... }:
 let cfg = config.haganah.graphical;
 in {
   options.haganah.graphical = {
@@ -6,14 +6,13 @@ in {
   };
 
 
-  config = lib.mkIf cfg.enable {
+  config = libx.mkIf cfg.enable {
 
     environment.systemPackages = with pkgs; [
       vscode
     ];
 
     programs.firefox.enable = true;
-
 
     # Enable the X11 windowing system.
     services.xserver.enable = true;

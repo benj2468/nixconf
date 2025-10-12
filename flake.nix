@@ -9,11 +9,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,13 +29,10 @@
     treefmt.url = "github:numtide/treefmt-nix";
 
     git-hooks.url = "github:cachix/git-hooks.nix";
-
-    mkdocs-flake.url = "github:applicative-systems/mkdocs-flake";
   };
 
   outputs = inputs:
     let localOverlays = import ./overlays; in inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      # (2) import mkdocs-flake module
       imports = [
         inputs.home-manager.flakeModules.home-manager
         inputs.git-hooks.flakeModule
@@ -97,6 +89,10 @@
         };
 
         legacyPackages = pkgs;
+
+        pre-commit = {
+          check.enable = true;
+        };
 
         treefmt = {
 
