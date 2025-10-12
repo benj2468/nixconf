@@ -22,8 +22,13 @@
       owner = "gitlab";
       group = "gitlab";
     };
-    rabin-gitlab-default= {
-      file = "${inputs.self}/secrets/${hostname}-gitlab-default.age";
+    rabin-gitlab-runner-1 = {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-1.age";
+      owner = "gitlab";
+      group = "gitlab";
+    };
+    rabin-gitlab-runner-2 = {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-2.age";
       owner = "gitlab";
       group = "gitlab";
     };
@@ -62,7 +67,12 @@
       default = {
         dockerImage = "nixos/nix";
         dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
-        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-default.path;
+        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-runner-1.path;
+      };
+      runner-2 = {
+        dockerImage = "nixos/nix";
+        dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
+        authenticationTokenConfigFile = config.age.secrets.rabin-gitlab-runner-2.path;
       };
     };
   };

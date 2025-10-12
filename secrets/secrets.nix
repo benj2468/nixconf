@@ -9,6 +9,6 @@ in
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
   "rabin-traccar.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-init-root-password.age".publicKeys = users ++ [ rabin ];
-  "rabin-gitlab-shell-1.age".publicKeys = users ++ [ rabin ];
-  "rabin-gitlab-default.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-1.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-2.age".publicKeys = users ++ [ rabin ];
 }
