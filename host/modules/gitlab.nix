@@ -44,11 +44,9 @@
         }
         {
           job_name = "gitlab-runner";
-          static_configs = [
-            {
-              targets = [ "localhost:9252" ];
-            }
-          ];
+          static_configs = [{
+            targets = [ "localhost:9252" ];
+          }];
         }
       ];
     };
@@ -61,12 +59,16 @@
       services = {
         default = {
           dockerImage = "nixos/nix";
-          dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
+          dockerVolumes = [
+            "/etc/hosts:/etc/hosts"
+          ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
         };
         runner-2 = {
           dockerImage = "nixos/nix";
-          dockerVolumes = [ "/etc/hosts:/etc/hosts" ];
+          dockerVolumes = [
+            "/etc/hosts:/etc/hosts"
+          ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-2.path;
         };
       };
