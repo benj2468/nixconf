@@ -38,7 +38,7 @@
         inputs.git-hooks.flakeModule
         inputs.treefmt.flakeModule
       ];
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       flake =
         let
           libx = import ./lib {
@@ -74,6 +74,10 @@
             }
             {
               username = "bcape";
+              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin ];
+            }
+            {
+              username = "benjcape";
               hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin ];
             }
           ];
@@ -119,7 +123,6 @@
         devShells.default = pkgs.mkShell {
           shellHook = ''
             ${config.pre-commit.installationScript}
-            echo 1>&2 "Welcome to the development shell!"
           '';
         };
       };

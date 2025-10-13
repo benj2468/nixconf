@@ -3,6 +3,7 @@
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
+    completionInit = "autoload -U compinit && compinit -u"; # The -u flag ignores insecure directories
 
     initContent = ''
       ZSH_TMUX_AUTOSTART=true
