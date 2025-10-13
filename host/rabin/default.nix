@@ -24,7 +24,7 @@
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
-    hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" ]; in {
+    hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" "actual.haganah.net" ]; in {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
       "100.73.51.55" = localhosts;
     };
@@ -47,10 +47,27 @@
     };
   };
 
+  services.actual = {
+    enable = true;
+    settings = {
+      hostname = "127.0.0.1";
+      port = 3001;
+      https = {
+        key = "/var/data/selfhost.key";
+        cert = "/var/data/selfhost.crt";
+      };
+    };
+  };
+
   services.prometheus.exporters.nginx.enable = true;
   services.nginx = {
     enable = true;
+
     recommendedProxySettings = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedTlsSettings = true;
+
     virtualHosts = {
       primary = {
         default = true;
@@ -92,6 +109,16 @@
       "git.haganah.net" = {
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+        };
+      };
+
+      "actual.haganah.net" = {
+        sslCertificateKey = "/var/data/selfhost.key";
+        sslCertificate = "/var/data/selfhost.crt";
+        onlySSL = true;
+        locations."/" = {
+          proxyPass = "https://127.0.0.1:${builtins.toString config.services.actual.settings.port}";
+          proxyWebsockets = true;
         };
       };
     };
