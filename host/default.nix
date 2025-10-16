@@ -2,7 +2,7 @@
 {
   imports = [
     (./. + "/${configname}")
-    (./. + "/${configname}/hardware-configuration.nix")
+    (./. + "/${configname}/hardware.nix")
     ./modules
   ];
 
