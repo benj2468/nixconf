@@ -66,6 +66,10 @@
               hostname = "rabin";
               system = "x86_64-linux";
             }
+            {
+              hostname = "golda";
+              system = "aarch64-linux";
+            }
           ];
           homeConfigurations = libx.mkHomes [
             {

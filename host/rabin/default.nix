@@ -47,6 +47,14 @@
     };
   };
 
+  services.actual = {
+    enable = true;
+    settings = {
+      hostname = "127.0.0.1";
+      port = 3001;
+    };
+  };
+
   services.prometheus.exporters.nginx.enable = true;
   services.nginx = {
     enable = true;
@@ -92,6 +100,13 @@
       "git.haganah.net" = {
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+        };
+      };
+
+      "actual.haganah.net" = {
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${config.services.actual.settings.port}";
+          proxyWebsockets = true;
         };
       };
     };
