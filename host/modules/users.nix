@@ -15,6 +15,9 @@ in
   };
 
   config = libx.mkIf config.haganah.users.enable {
+
+    nix.trustedUsers = [ "bcape" "admin" ];
+
     users.users.bcape = {
       isNormalUser = true;
       extraGroups = [ "wheel" "networkmanager" "docker" "users" ] ++ optionalLibVirt;

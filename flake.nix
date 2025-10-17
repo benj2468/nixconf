@@ -2,6 +2,8 @@
   description = "A simple NixOS flake";
 
   inputs = {
+    # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     home-manager = {
@@ -37,6 +39,7 @@
         inputs.home-manager.flakeModules.home-manager
         inputs.git-hooks.flakeModule
         inputs.treefmt.flakeModule
+        # inputs.determinate.nixosModules.default
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       flake =
@@ -66,6 +69,10 @@
               hostname = "rabin";
               system = "x86_64-linux";
             }
+            {
+              hostname = "golda";
+              system = "aarch64-linux";
+            }
           ];
           homeConfigurations = libx.mkHomes [
             {
@@ -74,7 +81,7 @@
             }
             {
               username = "bcape";
-              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin ];
+              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin nixosConfigurations.golda ];
             }
             {
               username = "benjcape";
