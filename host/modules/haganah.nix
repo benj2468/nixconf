@@ -39,6 +39,7 @@
       yq
       agenix
       cachix
+      iotop
       home-manager
     ];
 
