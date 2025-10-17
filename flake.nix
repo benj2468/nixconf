@@ -73,10 +73,6 @@
               hostname = "golda";
               system = "aarch64-linux";
             }
-            {
-              hostname = "gantz";
-              system = "aarch64-linux";
-            }
           ];
           homeConfigurations = libx.mkHomes [
             {
