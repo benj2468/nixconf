@@ -2,6 +2,8 @@
   description = "A simple NixOS flake";
 
   inputs = {
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     home-manager = {
@@ -37,6 +39,7 @@
         inputs.home-manager.flakeModules.home-manager
         inputs.git-hooks.flakeModule
         inputs.treefmt.flakeModule
+        # inputs.determinate.nixosModules.default
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       flake =
@@ -68,6 +71,10 @@
             }
             {
               hostname = "golda";
+              system = "aarch64-linux";
+            }
+            {
+              hostname = "gantz";
               system = "aarch64-linux";
             }
           ];

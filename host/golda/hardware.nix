@@ -24,15 +24,7 @@
     kernelParams = [ "cma=256M" ];
     loader = {
       grub.enable = false;
-      raspberryPi = {
-        enable = true;
-        version = 3;
-        uboot.enable = true;
-        firmwareConfig = ''
-          core_freq=250
-          gpu_mem=256
-        '';
-      };
+      generic-extlinux-compatible.enable = lib.mkDefault true;
     };
   };
 
