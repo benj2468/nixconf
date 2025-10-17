@@ -85,7 +85,7 @@
             }
             {
               username = "bcape";
-              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin ];
+              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin nixosConfigurations.golda ];
             }
             {
               username = "benjcape";
