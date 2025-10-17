@@ -2,7 +2,7 @@
   description = "A simple NixOS flake";
 
   inputs = {
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
