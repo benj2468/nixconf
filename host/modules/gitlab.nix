@@ -61,6 +61,7 @@
           dockerImage = "nixos/nix";
           dockerVolumes = [
             "/etc/hosts:/etc/hosts"
+            "/nix/store:/nix/store:rw"
           ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
         };
@@ -68,6 +69,7 @@
           dockerImage = "nixos/nix";
           dockerVolumes = [
             "/etc/hosts:/etc/hosts"
+            "/nix/store:/nix/store:rw"
           ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-2.path;
         };
