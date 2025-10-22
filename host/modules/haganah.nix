@@ -199,7 +199,6 @@
           hostName = "gantz";
           system = "aarch64-linux";
           protocol = "ssh";
-          maxJobs = 1;
           supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "uid-range" ];
         }
       ];
