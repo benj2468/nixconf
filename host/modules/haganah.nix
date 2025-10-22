@@ -192,5 +192,17 @@
     systemd.targets.suspend.enable = false;
     systemd.targets.hibernate.enable = false;
     systemd.targets.hybrid-sleep.enable = false;
+
+    nix = {
+      buildMachines = [
+        {
+          hostName = "gantz";
+          system = "aarch64-linux";
+          protocol = "ssh";
+          supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "uid-range" ];
+        }
+      ];
+      distributedBuilds = true;
+    };
   };
 }
