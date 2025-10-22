@@ -16,7 +16,7 @@ in
 
   config = libx.mkIf config.haganah.users.enable {
 
-    nix.settings.trustedUsers = [ "bcape" "admin" ];
+    nix.trustedUsers = [ "bcape" "admin" ];
 
     users.users.bcape = {
       isNormalUser = true;
