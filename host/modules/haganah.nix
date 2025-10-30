@@ -170,7 +170,14 @@
       };
     };
 
-    virtualisation.docker.enable = lib.mkDefault true;
+    virtualisation.docker = {
+      enable = lib.mkDefault true;
+      daemon.settings {
+      insecure-registries = [
+        "docker.haganah.net"
+      ];
+    }
+      };
 
     # Select internationalisation properties.
     i18n.defaultLocale = "en_US.UTF-8";
