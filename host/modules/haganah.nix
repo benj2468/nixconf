@@ -172,11 +172,6 @@
 
     virtualisation.docker = {
       enable = lib.mkDefault true;
-      daemon.settings = {
-        insecure-registries = [
-          "docker.haganah.net"
-        ];
-      };
     };
 
     # Select internationalisation properties.
