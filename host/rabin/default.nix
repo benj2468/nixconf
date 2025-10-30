@@ -249,6 +249,7 @@
       ];
       environment = {
         REGISTRY_AUTH = "htpasswd";
+        REGISTRY_AUTH_HTPASSWD_REALM = "Registry Realm";
         REGISTRY_AUTH_HTPASSWD_PATH = "/auth/registry.password";
         REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY = "/data";
       };
