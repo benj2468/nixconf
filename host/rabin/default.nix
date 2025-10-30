@@ -98,6 +98,9 @@
       };
 
       "docker.haganah.net" = {
+        sslCertificateKey = "/var/data/selfhost.key";
+        sslCertificate = "/var/data/selfhost.crt";
+        onlySSL = true;
         locations."/" = {
           proxyPass = "http://127.0.0.1:5000";
           proxyWebsockets = true;
@@ -224,6 +227,30 @@
         ];
       }
     ];
+  };
+
+  systemd.tmpfiles.rules = [
+    "d /var/lib/registry  0755 root root -"
+    "d /var/data/registry 0755 root root -"
+  ];
+
+  virtualisation.oci-containers.containers = {
+    registry = {
+      image = "registry:3";
+      autoStart = true;
+      ports = [
+        "5000:5000"
+      ];
+      volumes = [
+        "/var/lib/registry/registry.password:/auth/registry.password"
+        "/var/data/registry:/data"
+      ];
+      environment = {
+        REGISTRY_AUTH = "htpasswd";
+        REGISTRY_AUTH_HTPASSWD_PATH = "/auth/registry.password";
+        REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY = "/data";
+      };
+    };
   };
 
   # ZFS
