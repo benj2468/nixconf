@@ -234,6 +234,8 @@
     "d /var/data/registry 0755 root root -"
   ];
 
+  environment.systemPackages = [ pkgs.apacheHttpd ];
+
   virtualisation.oci-containers.containers = {
     registry = {
       image = "registry:3";
