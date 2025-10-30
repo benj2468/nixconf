@@ -1,4 +1,4 @@
-{ inputs, hostname, config, ... }:
+{ inputs, hostname, config, pkgs, ... }:
 {
   haganah = {
     enable = true;
