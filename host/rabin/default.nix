@@ -1,4 +1,4 @@
-{ inputs, hostname, config, ... }:
+{ pkgs, inputs, hostname, config, ... }:
 {
   haganah = {
     enable = true;
@@ -24,10 +24,21 @@
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
-    hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" "actual.haganah.net" ]; in {
-      # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.73.51.55" = localhosts;
-    };
+    hosts =
+      let
+        localhosts = [
+          "haganah.net"
+          "ntfy.haganah.net"
+          "traccar.haganah.net"
+          "git.haganah.net"
+          "actual.haganah.net"
+          "recipes.haganah.net"
+        ];
+      in
+      {
+        # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
+        "100.73.51.55" = localhosts;
+      };
   };
 
   services.ntfy-sh = {
@@ -120,6 +131,10 @@
           proxyPass = "https://127.0.0.1:${builtins.toString config.services.actual.settings.port}";
           proxyWebsockets = true;
         };
+      };
+
+      "recipes.haganah.net" = {
+        root = "${pkgs.bb-recipes}";
       };
     };
   };
