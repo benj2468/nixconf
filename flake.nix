@@ -96,6 +96,7 @@
           inherit system;
           overlays = [
             localOverlays.default
+            inputs.agenix.overlays.default
           ];
         };
 
@@ -128,6 +129,9 @@
         pre-commit.settings.hooks.treefmt.enable = true;
 
         devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            agenix
+          ];
           shellHook = ''
             ${config.pre-commit.installationScript}
           '';
