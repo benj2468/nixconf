@@ -31,7 +31,7 @@ let cfg = config.haganah.dhcp; in
 
     networking.nat = {
       enable = true;
-      internalIps = [ "10.101.101.0/24" ];
+      internalIPs = [ "10.101.101.0/24" ];
       internalInterfaces = [ cfg.bridgeName ];
     };
 
