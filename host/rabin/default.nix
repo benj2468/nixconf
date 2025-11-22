@@ -5,6 +5,12 @@
     users.enable = true;
     graphical.enable = true;
     gitlab.enable = true;
+    dhcp = {
+      enable = true;
+      bridgeInterfaces = [
+        "enp4s0"
+      ];
+    };
   };
 
   age.secrets = {
