@@ -49,11 +49,12 @@ let cfg = config.haganah.router; in
     services.dnsmasq = {
       enable = true;
       settings = {
+        interface = [ cfg.bridgeName "tailscale0" ];
         dhcp-option = [
           "option:router,10.101.101.1"
           "option:dns-server,10.101.101.1"
         ];
-        no-dhcp-interface = null;
+        no-dhcp-interface = "tailscale0";
         dhcp-range = [ "10.101.101.100,10.101.101.200,12h" ];
       };
     };
