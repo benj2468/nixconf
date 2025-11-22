@@ -25,8 +25,6 @@ let cfg = config.haganah.router; in
       tcpdump
     ];
 
-    networking.wireless.userControlled.enable = true;
-
     networking.interfaces."${cfg.bridgeName}".ipv4.addresses = [
       {
         address = "10.101.101.1";

@@ -21,11 +21,13 @@
     programs.zsh.enable = true;
 
     networking = {
-      wireless = {
-        enable = lib.mkDefault true;
-        secretsFile = config.age.secrets.wifi-psks.path;
-        networks.skiron.pskRaw = "ext:psk_skiron";
-      };
+
+      # If we ever switch to networkd...
+      # wireless = {
+      #   enable = lib.mkDefault true;
+      #   secretsFile = config.age.secrets.wifi-psks.path;
+      #   networks.skiron.pskRaw = "ext:psk_skiron";
+      # };
 
       networkmanager.enable = lib.mkDefault true;
     };
@@ -37,7 +39,6 @@
 
     services.tailscale = {
       enable = true;
-      useRoutingFeatures = "server";
       openFirewall = true;
     };
 
