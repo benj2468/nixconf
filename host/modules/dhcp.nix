@@ -21,6 +21,14 @@ let cfg = config.haganah.dhcp; in
 
   config = lib.mkIf cfg.enable {
 
+
+    networking.interfaces."${cfg.bridgeName}"ipv4.addresses = [
+      {
+        address = "10.101.101.1";
+        prefixLength = 24;
+      }
+    ];
+
     networking.bridges."${cfg.bridgeName}" = {
       interfaces = cfg.bridgeInterfaces;
     };
