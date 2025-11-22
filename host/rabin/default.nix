@@ -30,6 +30,8 @@
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
+    nameservers = [ "1.1.1.1" ];
+
     hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" "actual.haganah.net" ]; in {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
       "100.73.51.55" = localhosts;
