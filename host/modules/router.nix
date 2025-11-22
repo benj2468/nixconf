@@ -44,7 +44,6 @@ let cfg = config.haganah.router; in
       enable = true;
       internalIPs = [ "10.101.101.0/24" ];
       internalInterfaces = [ cfg.bridgeName ];
-      externalInterface = "tailscale0";
     };
 
     services.dnsmasq = {
@@ -53,7 +52,7 @@ let cfg = config.haganah.router; in
         interface = [ cfg.bridgeName "tailscale0" ];
         dhcp-option = [
           "option:router,10.101.101.1"
-          "option:dns-server,100.100.100.100"
+          "option:dns-server,8.8.8.8"
         ];
         no-dhcp-interface = "tailscale0";
         dhcp-range = [ "10.101.101.100,10.101.101.200,12h" ];
