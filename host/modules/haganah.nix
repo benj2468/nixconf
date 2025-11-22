@@ -12,6 +12,7 @@
     programs.zsh.enable = true;
 
     networking = {
+      wireless.enable = lib.mkDefault true;
       networkmanager.enable = lib.mkDefault true;
     };
 
