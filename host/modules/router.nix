@@ -62,7 +62,7 @@ let cfg = config.haganah.router; in
           "option:dns-server,10.101.101.1"
         ];
         no-dhcp-interface = null;
-        dhcp-range = [ "10.101.101.2,10.101.101.254,12h" ];
+        dhcp-range = [ "10.101.101.100,10.101.101.200,12h" ];
       };
     };
   };
