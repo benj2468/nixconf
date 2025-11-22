@@ -9,7 +9,7 @@ let cfg = config.haganah.router; in
       default = "br0";
     };
 
-    openFirewall = lib.mkEnableOption "Open the firewall for Router" // { enable = true; };
+    openFirewall = lib.mkEnableOption "Open the firewall for Router" // { default = true; };
 
     bridgeInterfaces = lib.mkOption {
       type = lib.types.listOf lib.types.str;
