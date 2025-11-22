@@ -44,6 +44,7 @@ let cfg = config.haganah.router; in
       enable = true;
       internalIPs = [ "10.101.101.0/24" ];
       internalInterfaces = [ cfg.bridgeName ];
+      externalInterface = "tailscale0";
     };
 
     services.dnsmasq = {
