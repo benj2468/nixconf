@@ -5,6 +5,6 @@
     ./gitlab.nix
     ./graphical.nix
     ./users.nix
-    ./dhcp.nix
+    ./router.nix
   ];
 }

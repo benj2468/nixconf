@@ -1,15 +1,15 @@
-{ lib, config, ... }:
-let cfg = config.haganah.dhcp; in
+{ pkgs, lib, config, ... }:
+let cfg = config.haganah.router; in
 {
-  options.haganah.dhcp = {
-    enable = lib.mkEnableOption "Enable the DHCP module";
+  options.haganah.router = {
+    enable = lib.mkEnableOption "Enable the Router module";
 
     bridgeName = lib.mkOption {
       type = lib.types.str;
       default = "br0";
     };
 
-    openFirewall = lib.mkEnableOption "Open the firewall for DHCP" // { enable = true; };
+    openFirewall = lib.mkEnableOption "Open the firewall for Router" // { enable = true; };
 
     bridgeInterfaces = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -21,6 +21,16 @@ let cfg = config.haganah.dhcp; in
 
   config = lib.mkIf cfg.enable {
 
+    environment.systemPackages = with pkgs; [
+      tcpdump
+    ];
+
+    networking = {
+      networkmanager.enable = false;
+      useNetworkd = true;
+    };
+
+    networking.wireless.userControlled.enable = true;
 
     networking.interfaces."${cfg.bridgeName}".ipv4.addresses = [
       {

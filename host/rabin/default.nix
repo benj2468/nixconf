@@ -5,7 +5,7 @@
     users.enable = true;
     graphical.enable = true;
     gitlab.enable = true;
-    dhcp = {
+    router = {
       enable = true;
       bridgeInterfaces = [
         "enp4s0"
