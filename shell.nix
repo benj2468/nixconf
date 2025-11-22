@@ -10,6 +10,7 @@
       nix
       home-manager
       git
+      agenix
     ];
     shellHook = ''
       exec zsh

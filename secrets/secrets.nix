@@ -6,6 +6,7 @@ let
   users = [ admin bcape ];
 in
 {
+  "wifi.age".publicKeys = users ++ [ rabin ];
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
   "rabin-traccar.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-1.age".publicKeys = users ++ [ rabin ];
