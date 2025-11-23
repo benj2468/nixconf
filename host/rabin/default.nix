@@ -8,7 +8,7 @@
     router = {
       enable = true;
       bridgeInterfaces = [
-        "enp4s0"
+        "vlan2"
       ];
     };
   };
@@ -28,7 +28,21 @@
 
   networking = {
 
+    useNetworkd = true;
+    networkmanager.enable = false;
+    dhcpcd.enable = false;
+
     firewall.allowedTCPPorts = [ 443 80 53 ];
+
+    nameservers = [ "1.1.1.1" ];
+
+    vlans = {
+      vlan1 = { id = 1; interface = "enp4s0"; };
+      vlan2 = { id = 2; interface = "enp4s0"; };
+    };
+
+    interfaces.enp4s0.useDHCP = false;
+    interfaces.vlan1.useDHCP = true;
 
     hosts =
       let

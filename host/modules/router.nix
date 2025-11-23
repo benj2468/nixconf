@@ -21,6 +21,15 @@ let cfg = config.haganah.router; in
 
   config = lib.mkIf cfg.enable {
 
+    assertions = [
+      {
+        assertion = config.networking.useNetworkd;
+        message = ''
+          Router configurations should use static network configurations using networkd.
+        '';
+      }
+    ];
+
     environment.systemPackages = with pkgs; [
       tcpdump
     ];
