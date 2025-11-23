@@ -37,6 +37,7 @@
       vlan2 = { id = 2; interface = "enp4s0"; };
     };
 
+    interfaces.enp4s0.useDHCP = false;
     interfaces.vlan1.useDHCP = true;
 
     hosts =
