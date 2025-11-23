@@ -30,7 +30,7 @@
       # };
 
       # Add the tailscale nameserver
-      nameservers = [ "100.100.100.100" ];
+      nameservers = [ "1.1.1.1" ];
 
       networkmanager.enable = lib.mkDefault true;
     };
