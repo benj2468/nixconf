@@ -8,7 +8,7 @@
     router = {
       enable = true;
       bridgeInterfaces = [
-        "enp4s0"
+        "vlan2"
       ];
     };
   };
@@ -35,6 +35,11 @@
     hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" "actual.haganah.net" ]; in {
       # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
       "100.73.51.55" = localhosts;
+    };
+
+    vlans = {
+      vlan1 = { id = 1; interface = "enp4s0"; };
+      vlan2 = { id = 2; interface = "enp4s0"; };
     };
   };
 
