@@ -35,9 +35,10 @@
       networkmanager.enable = lib.mkDefault true;
     };
 
-    services.resolved.enable = false;
+    services.resolved.enable = true;
     services.dnsmasq = {
       enable = true;
+      settings.port = 0;
       settings.server = config.networking.nameservers;
     };
 

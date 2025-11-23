@@ -11,7 +11,6 @@
     useNetworkd = true;
     networkmanager.enable = false;
     dhcpcd.enable = false;
-    resolvconf.enable = false;
 
     vlans = {
       # VLAN 11 is internet
