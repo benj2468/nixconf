@@ -29,6 +29,9 @@
       #   networks.skiron.pskRaw = "ext:psk_skiron";
       # };
 
+      # Add the tailscale nameserver
+      nameservers = [ "100.100.100.100" ];
+
       networkmanager.enable = lib.mkDefault true;
     };
 
