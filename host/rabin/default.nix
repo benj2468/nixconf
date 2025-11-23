@@ -28,6 +28,10 @@
 
   networking = {
 
+    useNetworkd = true;
+    networkmanager.enable = false;
+    dhcpcd.enable = false;
+
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
     nameservers = [ "1.1.1.1" ];
@@ -37,6 +41,7 @@
       vlan2 = { id = 2; interface = "enp4s0"; };
     };
 
+    interfaces.enp4s0.useDHCP = false;
     interfaces.vlan1.useDHCP = true;
 
     hosts =
