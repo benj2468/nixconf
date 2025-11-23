@@ -34,8 +34,6 @@
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
-    nameservers = [ "1.1.1.1" ];
-
     vlans = {
       # VLAN 11 is internet
       vlan11 = { id = 11; interface = "enp4s0"; };
