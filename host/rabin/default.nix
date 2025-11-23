@@ -41,6 +41,8 @@
       vlan1 = { id = 1; interface = "enp4s0"; };
       vlan2 = { id = 2; interface = "enp4s0"; };
     };
+
+    interfaces.vlan1.useDHCP = true;
   };
 
   services.ntfy-sh = {
