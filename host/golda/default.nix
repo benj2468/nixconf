@@ -12,6 +12,8 @@
     networkmanager.enable = false;
     dhcpcd.enable = false;
 
+    nameservers = [ "1.1.1.1" ];
+
     vlans = {
       # VLAN 11 is internet
       vlan11 = { id = 11; interface = "enu1u1"; };
