@@ -8,7 +8,7 @@
     router = {
       enable = true;
       bridgeInterfaces = [
-        "vlan2"
+        "vlan18"
       ];
     };
   };
@@ -28,21 +28,17 @@
 
   networking = {
 
-    useNetworkd = true;
-    networkmanager.enable = false;
-    dhcpcd.enable = false;
-
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
-    nameservers = [ "1.1.1.1" ];
-
     vlans = {
-      vlan1 = { id = 1; interface = "enp4s0"; };
-      vlan2 = { id = 2; interface = "enp4s0"; };
+      # VLAN 11 is internet
+      vlan11 = { id = 11; interface = "enp4s0"; };
+      # VLAN 18 will be local mesh, provided by this router.
+      vlan18 = { id = 18; interface = "enp4s0"; };
     };
 
     interfaces.enp4s0.useDHCP = false;
-    interfaces.vlan1.useDHCP = true;
+    interfaces.vlan11.useDHCP = true;
 
     hosts =
       let

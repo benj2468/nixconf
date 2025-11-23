@@ -29,12 +29,25 @@
       #   networks.skiron.pskRaw = "ext:psk_skiron";
       # };
 
-      networkmanager.enable = lib.mkDefault true;
+      # mkAfter puts this at the end of the list, rather than before 127.0.0.1
+      nameservers = lib.mkAfter [ "1.1.1.1" ];
+
+      useNetworkd = true;
+      networkmanager.enable = false;
+      dhcpcd.enable = false;
     };
 
-    services.resolved.enable = false;
+    services.resolved = {
+      enable = true;
+      extraConfig = ''
+        DNSStubListener=no
+        DNSStubListenerExtra=0.0.0.0:53
+        DNSStubListenerExtra=[::]:53
+      '';
+    };
     services.dnsmasq = {
       enable = true;
+      settings.port = 0;
     };
 
     services.tailscale = {
