@@ -31,7 +31,6 @@
     useNetworkd = true;
     networkmanager.enable = false;
     dhcpcd.enable = false;
-    resolvconf.enable = false;
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
 

@@ -30,12 +30,19 @@
       # };
 
       # Add the tailscale nameserver
-      nameservers = [ "1.1.1.1" ];
+      nameservers = lib.mkForce [ "127.0.0.1" "1.1.1.1" ];
 
       networkmanager.enable = lib.mkDefault true;
     };
 
-    services.resolved.enable = true;
+    services.resolved = {
+      enable = true;
+      extraConfig = ''
+        DNSStubListener=no
+        DNSStubListenerExtra=0.0.0.0:53
+        DNSStubListenerExtra=[::]:53
+      '';
+    };
     services.dnsmasq = {
       enable = true;
       settings.port = 0;
