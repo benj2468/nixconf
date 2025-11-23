@@ -29,10 +29,12 @@
       #   networks.skiron.pskRaw = "ext:psk_skiron";
       # };
 
-      # Add the tailscale nameserver
-      nameservers = lib.mkForce [ "127.0.0.1" "1.1.1.1" ];
+      # mkAfter puts this at the end of the list, rather than before 127.0.0.1
+      nameservers = lib.mkAfter [ "1.1.1.1" ];
 
-      networkmanager.enable = lib.mkDefault true;
+      useNetworkd = true;
+      networkmanager.enable = false;
+      dhcpcd.enable = false;
     };
 
     services.resolved = {
@@ -46,7 +48,6 @@
     services.dnsmasq = {
       enable = true;
       settings.port = 0;
-      settings.server = config.networking.nameservers;
     };
 
     services.tailscale = {

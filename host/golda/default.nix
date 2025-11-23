@@ -7,11 +7,6 @@
   };
 
   networking = {
-
-    useNetworkd = true;
-    networkmanager.enable = false;
-    dhcpcd.enable = false;
-
     vlans = {
       # VLAN 11 is internet
       vlan11 = { id = 11; interface = "enu1u1"; };

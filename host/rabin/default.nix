@@ -28,10 +28,6 @@
 
   networking = {
 
-    useNetworkd = true;
-    networkmanager.enable = false;
-    dhcpcd.enable = false;
-
     firewall.allowedTCPPorts = [ 443 80 53 ];
 
     vlans = {
