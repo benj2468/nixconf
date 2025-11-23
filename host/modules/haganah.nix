@@ -35,6 +35,7 @@
     services.resolved.enable = false;
     services.dnsmasq = {
       enable = true;
+      settings.server = config.networking.nameservers;
     };
 
     services.tailscale = {
