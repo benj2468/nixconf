@@ -1,4 +1,4 @@
-{ inputs, hostname, config, ... }:
+{ pkgs, inputs, hostname, config, ... }:
 {
   haganah = {
     enable = true;
@@ -32,17 +32,28 @@
 
     nameservers = [ "1.1.1.1" ];
 
-    hosts = let localhosts = [ "haganah.net" "ntfy.haganah.net" "traccar.haganah.net" "git.haganah.net" "actual.haganah.net" ]; in {
-      # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
-      "100.73.51.55" = localhosts;
-    };
-
     vlans = {
       vlan1 = { id = 1; interface = "enp4s0"; };
       vlan2 = { id = 2; interface = "enp4s0"; };
     };
 
     interfaces.vlan1.useDHCP = true;
+
+    hosts =
+      let
+        localhosts = [
+          "haganah.net"
+          "ntfy.haganah.net"
+          "traccar.haganah.net"
+          "git.haganah.net"
+          "actual.haganah.net"
+          "recipes.haganah.net"
+        ];
+      in
+      {
+        # Hmm... I guess it makes sense that this needs to be the global IP. Not ideal...
+        "100.73.51.55" = localhosts;
+      };
   };
 
   services.ntfy-sh = {
@@ -135,6 +146,10 @@
           proxyPass = "https://127.0.0.1:${builtins.toString config.services.actual.settings.port}";
           proxyWebsockets = true;
         };
+      };
+
+      "recipes.haganah.net" = {
+        root = "${pkgs.bb-recipes}";
       };
     };
   };
