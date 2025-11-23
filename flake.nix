@@ -3,8 +3,7 @@
 
   inputs = {
     # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
-
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -32,6 +31,7 @@
 
     git-hooks.url = "github:cachix/git-hooks.nix";
   };
+
 
   outputs = inputs:
     let localOverlays = import ./overlays; in inputs.flake-parts.lib.mkFlake { inherit inputs; } {
