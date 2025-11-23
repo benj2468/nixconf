@@ -1,6 +1,7 @@
 { config
 , lib
 , pkgs
+, inputs
 , ...
 }: {
   options.haganah = {
@@ -9,9 +10,25 @@
 
   config = lib.mkIf config.haganah.enable {
 
+    age.secrets = {
+      wifi-psks = {
+        file = "${inputs.self}/secrets/wifi.age";
+        owner = "root";
+        group = "users";
+      };
+    };
+
     programs.zsh.enable = true;
 
     networking = {
+
+      # If we ever switch to networkd...
+      # wireless = {
+      #   enable = lib.mkDefault true;
+      #   secretsFile = config.age.secrets.wifi-psks.path;
+      #   networks.skiron.pskRaw = "ext:psk_skiron";
+      # };
+
       networkmanager.enable = lib.mkDefault true;
     };
 
@@ -22,8 +39,8 @@
 
     services.tailscale = {
       enable = true;
-      useRoutingFeatures = "server";
       openFirewall = true;
+      useRoutingFeatures = lib.mkDefault "client";
     };
 
     environment.systemPackages = with pkgs; [
