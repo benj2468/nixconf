@@ -5,8 +5,8 @@ let
     domain = "git.haganah.net";
     owner = "benj2468";
     repo = "bb-recipes";
-    rev = "d3769e59219af3cb7cb37d28177c8cf6e70784a4";
-    hash = "sha256-0BpLZL5luGeG04FrZXF0mmQ2NHpBgVds2Yt34UttX5g";
+    rev = "91831eb02f777551f526ecc00d42ad3091dc18fc";
+    hash = "sha256-B2VJ+Rk46tLi8kAOFh+Wp7vUmZnqpT/zEV9847EA8D4=";
   };
 in
 runCommand "bb-recipes"
