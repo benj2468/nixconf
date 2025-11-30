@@ -39,7 +39,6 @@
     packages = with pkgs; [
       btop
       bat
-      thefuck
       nodejs
       alejandra
       silver-searcher
@@ -49,6 +48,7 @@
       lazygit
       nix-output-monitor
       cachix
+      claude-code
     ];
   };
 
