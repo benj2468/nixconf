@@ -73,6 +73,10 @@
               hostname = "golda";
               system = "aarch64-linux";
             }
+            {
+              hostname = "gantz";
+              system = "aarch64-linux";
+            }
           ];
           homeConfigurations = libx.mkHomes [
             {
@@ -81,7 +85,7 @@
             }
             {
               username = "bcape";
-              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin nixosConfigurations.golda ];
+              hosts = [ nixosConfigurations.generic nixosConfigurations.generic-aarch64-darwin nixosConfigurations.rabin nixosConfigurations.golda nixosConfigurations.gantz ];
             }
             {
               username = "benjcape";
