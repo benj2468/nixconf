@@ -26,6 +26,15 @@
     };
   };
 
+
+  services.step-ca = {
+    enable = true;
+    address = "127.0.0.1";
+    port = 5443;
+    settings = builtins.fromJSON (builtins.readFile /var/lib/step-ca/config/ca.json);
+    intermediatePasswordFile = "/var/lib/secrets/step-ca/intermediatePasswordFile";
+  };
+
   networking = {
 
     firewall.allowedTCPPorts = [ 443 80 53 ];
@@ -47,8 +56,8 @@
           "ntfy.haganah.net"
           "traccar.haganah.net"
           "git.haganah.net"
-          "actual.haganah.net"
           "recipes.haganah.net"
+          "ca.haganah.net"
         ];
       in
       {
@@ -71,18 +80,6 @@
     settings = {
       databasePassword = "$TRACCAR_DB_PASSWORD";
       webPort = "8083";
-    };
-  };
-
-  services.actual = {
-    enable = true;
-    settings = {
-      hostname = "127.0.0.1";
-      port = 3001;
-      https = {
-        key = "/var/data/selfhost.key";
-        cert = "/var/data/selfhost.crt";
-      };
     };
   };
 
@@ -115,6 +112,7 @@
         locations."/" = {
           proxyPass = "http://127.0.0.1:8082";
         };
+
       };
 
       "ntfy.haganah.net" = {
@@ -134,18 +132,22 @@
       };
 
       "git.haganah.net" = {
+        # TODO(bjc) Make this SSL
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
         };
       };
 
-      "actual.haganah.net" = {
-        sslCertificateKey = "/var/data/selfhost.key";
-        sslCertificate = "/var/data/selfhost.crt";
+      "ca.haganah.net" = {
         onlySSL = true;
-        locations."/" = {
-          proxyPass = "https://127.0.0.1:${builtins.toString config.services.actual.settings.port}";
-          proxyWebsockets = true;
+        # TODO(bjc) Add these to agenix
+        sslCertificateKey = "/var/lib/nginx/ssl/ca.key";
+        sslCertificate = "/var/lib/nginx/ssl/ca.crt";
+        locations = {
+          "/" = {
+            proxyPass = "https://127.0.0.1:${builtins.toString config.services.step-ca.port}";
+            proxyWebsockets = true;
+          };
         };
       };
 
