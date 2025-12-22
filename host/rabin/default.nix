@@ -132,7 +132,9 @@
       };
 
       "git.haganah.net" = {
-        # TODO(bjc) Make this SSL
+        onlySSL = true;
+        sslCertificateKey = "/var/lib/secrets/gitlab/gitlab.key";
+        sslCertificate = "/var/lib/secrets/gitlab/gitlab.crt";
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
         };
@@ -140,9 +142,8 @@
 
       "ca.haganah.net" = {
         onlySSL = true;
-        # TODO(bjc) Add these to agenix
-        sslCertificateKey = "/var/lib/nginx/ssl/ca.key";
-        sslCertificate = "/var/lib/nginx/ssl/ca.crt";
+        sslCertificateKey = "/var/lib/secrets/step-ca/ca.key";
+        sslCertificate = "/var/lib/secrets/step-ca/ca.crt";
         locations = {
           "/" = {
             proxyPass = "https://127.0.0.1:${builtins.toString config.services.step-ca.port}";

@@ -79,7 +79,8 @@
       databasePasswordFile = pkgs.writeText "dbPassword" "24HKq$LnVsHqExYL";
       initialRootPasswordFile = pkgs.writeText "rootPassword" "dakqdvp4ovhksxer";
       host = "git.haganah.net";
-      port = 80;
+      port = 443;
+      https = true;
       extraConfig = {
         monitoring = {
           sidekiq_exporter = {
