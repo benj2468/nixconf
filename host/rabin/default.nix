@@ -224,10 +224,10 @@
           {
             gitlab = {
               icon = "gitlab.png";
-              href = "http://git.haganah.net";
+              href = "https://git.haganah.net";
               widget = {
                 type = "gitlab";
-                url = "http://git.haganah.net";
+                url = "https://git.haganah.net";
                 key = "{{HOMEPAGE_VAR_GITLAB_API_KEY}}";
                 user_id = "1";
               };
@@ -244,6 +244,18 @@
               widget = {
                 type = "tailscale";
                 deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}";
+                key = "{{HOMEPAGE_VAR_TAILSCALE_API_KEY}}";
+              };
+            };
+          }
+          {
+            shamir = {
+              description = "shamir";
+              icon = "tailscale.png";
+              href = "http://haganah.net";
+              widget = {
+                type = "tailscale";
+                deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_SHAMIR}}";
                 key = "{{HOMEPAGE_VAR_TAILSCALE_API_KEY}}";
               };
             };
