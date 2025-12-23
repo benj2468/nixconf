@@ -1,10 +1,10 @@
-{ pkgs, inputs, config, ... }:
-let
-  mkSecret = name: { ... }@args: ({
-    file = "${inputs.self}/secrets/${name}.age";
-  } // args);
-in
+{ pkgs, libx, config, ... }:
 {
+
+  imports = [
+    ./modules/step-ca.nix
+  ];
+
   haganah = {
     enable = true;
     users.enable = true;
@@ -19,20 +19,7 @@ in
   };
 
   age.secrets = {
-    rabin-dashboard = mkSecret "rabin-dashboard" { };
-    rabin-ca-root = mkSecret "rabin-ca-root" { };
-  };
-
-  security.pki.certificates = [
-    config.age.secrets.rabin-ca-root.path
-  ];
-
-  services.step-ca = {
-    enable = true;
-    address = "127.0.0.1";
-    port = 5443;
-    settings = builtins.fromJSON (builtins.readFile /var/lib/step-ca/config/ca.json);
-    intermediatePasswordFile = "/var/lib/secrets/step-ca/intermediatePasswordFile";
+    rabin-dashboard = libx.mkSecret "rabin-dashboard" { };
   };
 
   networking = {

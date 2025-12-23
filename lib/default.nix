@@ -4,6 +4,10 @@ let lib = inputs.nixpkgs.lib; in rec {
     mkTieredEnableOption = parent: desc: (lib.mkEnableOption desc) // {
       apply = x: parent.enable && x;
     };
+
+    mkSecret = name: { ... }@args: ({
+      file = "${inputs.self}/secrets/${name}.age";
+    } // args);
   };
 
   mkHost =
