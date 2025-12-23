@@ -1,4 +1,9 @@
-{ pkgs, inputs, hostname, config, ... }:
+{ pkgs, inputs, config, ... }:
+let
+  mkSecret = name: { ... }@args: ({
+    file = "${inputs.self}/secrets/${name}.age";
+  } // args);
+in
 {
   haganah = {
     enable = true;
@@ -14,18 +19,13 @@
   };
 
   age.secrets = {
-    rabin-dashboard = {
-      file = "${inputs.self}/secrets/${hostname}-dashboard.age";
-      owner = "root";
-      group = "users";
-    };
-    rabin-traccar = {
-      file = "${inputs.self}/secrets/${hostname}-traccar.age";
-      owner = "root";
-      group = "users";
-    };
+    rabin-dashboard = mkSecret "rabin-dashboard" { };
+    rabin-ca-root = mkSecret "rabin-ca-root" { };
   };
 
+  security.pki.certificates = [
+    config.age.secrets.rabin-ca-root.path
+  ];
 
   services.step-ca = {
     enable = true;
@@ -53,11 +53,10 @@
       let
         localhosts = [
           "haganah.net"
-          "ntfy.haganah.net"
-          "traccar.haganah.net"
           "git.haganah.net"
           "recipes.haganah.net"
           "ca.haganah.net"
+          "home.haganah.net"
         ];
       in
       {
@@ -66,24 +65,14 @@
       };
   };
 
-  services.ntfy-sh = {
-    enable = true;
-    settings = {
-      base-url = "http://ntfy.haganah.net";
-      upstream-base-url = "https://ntfy.sh";
-    };
-  };
-
-  services.traccar = {
-    enable = true;
-    environmentFile = config.age.secrets.rabin-traccar.path;
-    settings = {
-      databasePassword = "$TRACCAR_DB_PASSWORD";
-      webPort = "8083";
-    };
-  };
-
   services.prometheus.exporters.nginx.enable = true;
+  security.acme = {
+    acceptTerms = true;
+    defaults = {
+      email = "bcape@haganah.net";
+      server = "https://127.0.0.1:${builtins.toString config.services.step-ca.port}/acme/acme/directory";
+    };
+  };
   services.nginx = {
     enable = true;
 
@@ -115,38 +104,27 @@
 
       };
 
-      "ntfy.haganah.net" = {
+      "home.haganah.net" = {
         locations."/" = {
-          proxyPass = "http://127.0.0.1:2586";
+          proxyPass = "http://127.0.0.1:8123";
           proxyWebsockets = true;
         };
       };
 
-      "traccar.haganah.net" = {
-        locations = {
-          "/" = {
-            proxyPass = "http://127.0.0.1:8083";
-            proxyWebsockets = true;
-          };
-        };
-      };
-
       "git.haganah.net" = {
-        onlySSL = true;
-        sslCertificateKey = "/var/lib/secrets/gitlab/gitlab.key";
-        sslCertificate = "/var/lib/secrets/gitlab/gitlab.crt";
+        forceSSL = true;
+        enableACME = true;
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
         };
       };
 
       "ca.haganah.net" = {
-        onlySSL = true;
-        sslCertificateKey = "/var/lib/secrets/step-ca/ca.key";
-        sslCertificate = "/var/lib/secrets/step-ca/ca.crt";
+        forceSSL = true;
+        enableACME = true;
         locations = {
           "/" = {
-            proxyPass = "https://127.0.0.1:${builtins.toString config.services.step-ca.port}";
+            proxyPass = "http://127.0.0.1:${builtins.toString config.services.step-ca.port}";
             proxyWebsockets = true;
           };
         };
@@ -263,6 +241,23 @@
         ];
       }
     ];
+  };
+
+  virtualisation.oci-containers = {
+    backend = "podman";
+    containers.homeassistant = {
+      volumes = [ "/var/lib/home-assistant:/config" ];
+      environment.TZ = "America/Los_Angeles";
+      image = "ghcr.io/home-assistant/home-assistant:2025.12.4";
+      capabilities = {
+        NET_ADMIN = true;
+      };
+      extraOptions = [
+        "--network=host"
+        # Pass devices into the container, so Home Assistant can discover and make use of them
+        #"--device=/dev/ttyACM0:/dev/ttyACM0"
+      ];
+    };
   };
 
   # ZFS
