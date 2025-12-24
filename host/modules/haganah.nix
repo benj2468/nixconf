@@ -11,7 +11,7 @@
   config = lib.mkIf config.haganah.enable {
 
     age.secrets = {
-      haganah-cache = libx.mkSecret "rabin-cache" {
+      haganah-cache = libx.mkSecret "haganah-cache" {
         mode = "440";
         owner = "root";
         group = "wheel";
