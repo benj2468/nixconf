@@ -6,12 +6,10 @@ let
   users = [ admin bcape ];
 in
 {
-  "wifi.age".publicKeys = users ++ [ rabin ];
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-1.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-2.age".publicKeys = users ++ [ rabin ];
-  "rabin-ca-root.age".publicKeys = users ++ [ rabin ];
-  "rabin-ca-inter-crt.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-key.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-password.age".publicKeys = users ++ [ rabin ];
+  "rabin-cache.age".publicKeys = users ++ [ rabin ];
 }

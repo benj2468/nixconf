@@ -4,18 +4,20 @@ let
     owner = "step-ca";
     group = "step-ca";
   };
+
+  rabin-ca-root = ./root.crt;
+  rabin-ca-inter-crt = ./inter.crt;
 in
 {
 
   age.secrets = {
-    rabin-ca-root = libx.mkSecret "rabin-ca-root" stepPerms;
-    rabin-ca-inter-crt = libx.mkSecret "rabin-ca-inter-crt" stepPerms;
     rabin-ca-inter-key = libx.mkSecret "rabin-ca-inter-key" stepPerms;
     rabin-ca-inter-password = libx.mkSecret "rabin-ca-inter-password" stepPerms;
   };
 
-  security.pki.certificates = [
-    config.age.secrets.rabin-ca-root.path
+  security.pki.certificateFiles = [
+    rabin-ca-root
+    rabin-ca-inter-crt
   ];
 
   services.step-ca = with config.age.secrets; {
@@ -23,8 +25,8 @@ in
     address = "127.0.0.1";
     port = 5443;
     settings = {
-      root = rabin-ca-root.path;
-      crt = rabin-ca-inter-crt.path;
+      root = rabin-ca-root;
+      crt = rabin-ca-inter-crt;
       key = rabin-ca-inter-key.path;
       address = ":5443";
       dnsNames = [

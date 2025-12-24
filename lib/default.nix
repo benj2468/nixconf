@@ -22,6 +22,7 @@ let lib = inputs.nixpkgs.lib; in rec {
 
         modules = [
           inputs.agenix.nixosModules.default
+          inputs.harmonia.nixosModules.harmonia
           ({ ... }: {
             nixpkgs.overlays = [
               localOverlays.default

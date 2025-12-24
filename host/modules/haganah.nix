@@ -1,7 +1,7 @@
 { config
 , lib
 , pkgs
-, inputs
+, libx
 , ...
 }: {
   options.haganah = {
@@ -11,23 +11,16 @@
   config = lib.mkIf config.haganah.enable {
 
     age.secrets = {
-      wifi-psks = {
-        file = "${inputs.self}/secrets/wifi.age";
+      haganah-cache = libx.mkSecret "rabin-cache" {
+        mode = "440";
         owner = "root";
-        group = "users";
+        group = "wheel";
       };
     };
 
     programs.zsh.enable = true;
 
     networking = {
-
-      # If we ever switch to networkd...
-      # wireless = {
-      #   enable = lib.mkDefault true;
-      #   secretsFile = config.age.secrets.wifi-psks.path;
-      #   networks.skiron.pskRaw = "ext:psk_skiron";
-      # };
 
       # mkAfter puts this at the end of the list, rather than before 127.0.0.1
       nameservers = lib.mkAfter [ "1.1.1.1" ];
@@ -224,6 +217,23 @@
     systemd.targets.hybrid-sleep.enable = false;
 
     nix = {
+      settings = {
+        substituters = [ "https://cache.haganah.net" ];
+        trusted-public-keys = [ "cache.haganah.net:F9mVI5kLMhuykafiB9juKqBpdY4TFg25yPUBn9+yaqo=" ];
+        secret-key-files = [ config.age.secrets.haganah-cache.path ];
+        post-build-hook = [
+          (pkgs.writeShellScript "haganah-cache-post-build-push"
+            ''
+              #! ${pkgs.runtimeShell}
+              set -eu
+              set -f # disable globbing
+              export IFS=' '
+
+              echo "Uploading paths" $OUT_PATHS
+              exec nix copy --to "https://cache.haganah.net" $OUT_PATHS
+            '')
+        ];
+      };
       buildMachines = [
         {
           hostName = "gantz";
