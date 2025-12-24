@@ -1,10 +1,5 @@
 { pkgs, libx, config, ... }:
 {
-
-  imports = [
-    ./modules/step-ca/module.nix
-  ];
-
   haganah = {
     enable = true;
     users.enable = true;

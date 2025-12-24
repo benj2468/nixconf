@@ -221,18 +221,6 @@
         substituters = [ "https://cache.haganah.net" ];
         trusted-public-keys = [ "cache.haganah.net:F9mVI5kLMhuykafiB9juKqBpdY4TFg25yPUBn9+yaqo=" ];
         secret-key-files = [ config.age.secrets.haganah-cache.path ];
-        post-build-hook = [
-          (pkgs.writeShellScript "haganah-cache-post-build-push"
-            ''
-              #! ${pkgs.runtimeShell}
-              set -eu
-              set -f # disable globbing
-              export IFS=' '
-
-              echo "Uploading paths" $OUT_PATHS
-              exec nix copy --to "https://cache.haganah.net" $OUT_PATHS
-            '')
-        ];
       };
       buildMachines = [
         {
