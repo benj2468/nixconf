@@ -11,6 +11,7 @@
         "vlan18"
       ];
     };
+    security.ca.type = "server";
   };
 
   age.secrets = {
