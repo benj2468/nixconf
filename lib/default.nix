@@ -36,7 +36,6 @@ let lib = inputs.nixpkgs.lib; in rec {
 
   mkHosts = hosts: lib.mergeAttrsList (map mkHost hosts);
 
-
   mkHostHome = { username, host }: {
     "${username}@${host.config.networking.hostName}" = inputs.home-manager.lib.homeManagerConfiguration {
       inherit (host) pkgs;
@@ -56,7 +55,6 @@ let lib = inputs.nixpkgs.lib; in rec {
       ];
     };
   };
-
 
   mkHome = { username, hosts }: lib.mergeAttrsList (map (host: mkHostHome { inherit username host; }) hosts);
 

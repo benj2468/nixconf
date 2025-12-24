@@ -25,6 +25,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    docker-nixpkgs = {
+      url = "github:nix-community/docker-nixpkgs";
+      flake = false;
+    };
 
     # Dev things
 
@@ -109,8 +113,11 @@
           overlays = [
             localOverlays.default
             inputs.agenix.overlays.default
+            (import "${inputs.docker-nixpkgs}/overlay.nix")
           ];
         };
+
+        packages = { } // (pkgs.callPackage ./images { });
 
         legacyPackages = pkgs;
 
