@@ -6,5 +6,6 @@
     ./graphical.nix
     ./users.nix
     ./router.nix
+    ./step-ca/module.nix
   ];
 }

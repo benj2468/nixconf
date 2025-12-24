@@ -20,6 +20,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    harmonia = {
+      url = "github:nix-community/harmonia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+
+    # Dev things
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     catppuccin = {

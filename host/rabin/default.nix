@@ -1,10 +1,5 @@
 { pkgs, libx, config, ... }:
 {
-
-  imports = [
-    ./modules/step-ca.nix
-  ];
-
   haganah = {
     enable = true;
     users.enable = true;
@@ -44,6 +39,7 @@
           "recipes.haganah.net"
           "ca.haganah.net"
           "home.haganah.net"
+          "cache.haganah.net"
         ];
       in
       {
@@ -120,7 +116,33 @@
       "recipes.haganah.net" = {
         root = "${pkgs.bb-recipes}";
       };
+
+      "cache.haganah.net" = {
+        forceSSL = true;
+        enableACME = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://localhost:5000";
+          };
+        };
+      };
     };
+  };
+
+  services.harmonia-dev.cache = {
+    enable = true;
+    signKeyPaths = [ config.age.secrets.haganah-cache.path ];
+  };
+
+  services.prometheus = {
+    scrapeConfigs = [
+      {
+        job_name = "harmonia";
+        static_configs = [{
+          targets = [ "localhost:5000" ];
+        }];
+      }
+    ];
   };
 
   services.homepage-dashboard = {
