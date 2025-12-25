@@ -41,6 +41,7 @@
           "ca.haganah.net"
           "home.haganah.net"
           "cache.haganah.net"
+          "registry.haganah.net"
         ];
       in
       {
@@ -59,6 +60,7 @@
   };
   services.nginx = {
     enable = true;
+    clientMaxBodySize = "100M";
 
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
@@ -100,6 +102,14 @@
         enableACME = true;
         locations."/" = {
           proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+        };
+      };
+
+      "registry.haganah.net" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://localhost:5001";
         };
       };
 
@@ -255,18 +265,25 @@
 
   virtualisation.oci-containers = {
     backend = "podman";
-    containers.homeassistant = {
-      volumes = [ "/var/lib/home-assistant:/config" ];
-      environment.TZ = "America/Los_Angeles";
-      image = "ghcr.io/home-assistant/home-assistant:2025.12.4";
-      capabilities = {
-        NET_ADMIN = true;
+    containers = {
+      registry = {
+        volumes = [ "/var/lib/registry:/var/lib/registry" ];
+        image = "registry:3";
+        ports = [ "5001:5000" ];
       };
-      extraOptions = [
-        "--network=host"
-        # Pass devices into the container, so Home Assistant can discover and make use of them
-        #"--device=/dev/ttyACM0:/dev/ttyACM0"
-      ];
+      homeassistant = {
+        volumes = [ "/var/lib/home-assistant:/config" ];
+        environment.TZ = "America/Los_Angeles";
+        image = "ghcr.io/home-assistant/home-assistant:2025.12.4";
+        capabilities = {
+          NET_ADMIN = true;
+        };
+        extraOptions = [
+          "--network=host"
+          # Pass devices into the container, so Home Assistant can discover and make use of them
+          #"--device=/dev/ttyACM0:/dev/ttyACM0"
+        ];
+      };
     };
   };
 

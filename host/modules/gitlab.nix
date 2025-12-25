@@ -58,6 +58,9 @@
       };
       services = {
         default = {
+          registrationFlags = [
+            "--tls-ca-file ${../modules/step-ca/root.crt}"
+          ];
           dockerImage = "nixos/nix";
           dockerVolumes = [
             "/etc/hosts:/etc/hosts"
@@ -65,6 +68,9 @@
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
         };
         runner-2 = {
+          registrationFlags = [
+            "--tls-ca-file ${../modules/step-ca/root.crt}"
+          ];
           dockerImage = "nixos/nix";
           dockerVolumes = [
             "/etc/hosts:/etc/hosts"
