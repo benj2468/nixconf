@@ -1,4 +1,4 @@
-{ pkgs, libx, config, ... }:
+{ libx, config, ... }:
 {
   haganah = {
     enable = true;
@@ -125,7 +125,12 @@
       };
 
       "recipes.haganah.net" = {
-        root = "${pkgs.bb-recipes}";
+        locations = {
+          "/" = {
+            proxyPass = "http://localhost:${builtins.toString config.services.tandoor-recipes.port}";
+            proxyWebsockets = true;
+          };
+        };
       };
 
       "cache.haganah.net" = {
@@ -143,6 +148,17 @@
   services.harmonia-dev.cache = {
     enable = true;
     signKeyPaths = [ config.age.secrets.haganah-cache.path ];
+  };
+
+  services.tandoor-recipes = {
+    enable = true;
+    port = 6690;
+    database.createLocally = true;
+    extraConfig = {
+      ALLOWED_HOSTS = "recipes.haganah.net";
+      ENABLE_SIGNUP = 1;
+      ENABLE_METRICS = 1;
+    };
   };
 
   services.prometheus = {
