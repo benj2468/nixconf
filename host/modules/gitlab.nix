@@ -61,20 +61,16 @@
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
           ];
+          dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
           dockerImage = "nixos/nix";
-          dockerVolumes = [
-            "/etc/hosts:/etc/hosts"
-          ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
         };
         runner-2 = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
           ];
+          dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
           dockerImage = "nixos/nix";
-          dockerVolumes = [
-            "/etc/hosts:/etc/hosts"
-          ];
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-2.path;
         };
       };
