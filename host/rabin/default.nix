@@ -126,6 +126,7 @@
 
       "recipes.haganah.net" = {
         locations = {
+          "/media/".alias = "/var/lib/tandoor-recipes/";
           "/" = {
             proxyPass = "http://localhost:${builtins.toString config.services.tandoor-recipes.port}";
             proxyWebsockets = true;

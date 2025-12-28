@@ -221,6 +221,7 @@
         substituters = [ "https://cache.haganah.net" ];
         trusted-public-keys = [ "cache.haganah.net:F9mVI5kLMhuykafiB9juKqBpdY4TFg25yPUBn9+yaqo=" ];
         secret-key-files = [ config.age.secrets.haganah-cache.path ];
+        trusted-users = [ "ci" ];
       };
       buildMachines = [
         {

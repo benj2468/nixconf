@@ -16,6 +16,14 @@
         owner = "gitlab";
         group = "gitlab";
       };
+      gitlab-runner-nix = libx.mkSecret "rabin-gitlab-runner-beta" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      ci-private-key = libx.mkSecret "ci-private-key" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
     };
 
     environment.systemPackages = with pkgs; [
@@ -57,21 +65,35 @@
         listen_address = "0.0.0.0:9252";
       };
       services = {
-        default = {
+        runner-docker-1 = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
           ];
           dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
-          dockerImage = "nixos/nix";
+          dockerImage = "docker:latest";
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
         };
-        runner-2 = {
+        runner-docker-2 = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
           ];
           dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
-          dockerImage = "nixos/nix";
+          dockerImage = "docker:latest";
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-2.path;
+        };
+        runner-nix = {
+          registrationFlags = [
+            "--tls-ca-file ${../modules/step-ca/root.crt}"
+          ];
+          dockerVolumes =
+            [
+              "/etc/hosts:/etc/hosts"
+
+              "${config.age.secrets.haganah-cache.path}:/etc/nix/key.private:ro"
+              "${config.age.secrets.ci-private-key.path}:/root/.ssh/id_rsa:ro"
+            ];
+          dockerImage = "nixos/nix";
+          authenticationTokenConfigFile = config.age.secrets.gitlab-runner-nix.path;
         };
       };
     };

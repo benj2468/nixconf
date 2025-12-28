@@ -11,7 +11,9 @@ in
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-1.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-2.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-beta.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-key.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-password.age".publicKeys = users ++ [ rabin ];
   "haganah-cache.age".publicKeys = users ++ machines;
+  "ci-private-key.age".publicKeys = users ++ machines;
 }
