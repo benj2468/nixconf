@@ -30,6 +30,11 @@
       dhcpcd.enable = false;
     };
 
+    services.chrony = {
+      enable = true;
+      servers = [ "pool.ntp.org" ];
+    };
+
     services.resolved = {
       enable = true;
       extraConfig = ''
