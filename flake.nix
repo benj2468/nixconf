@@ -15,17 +15,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    vscode-server = {
-      url = "github:nix-community/nixos-vscode-server";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    harmonia = {
-      url = "github:nix-community/harmonia";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-
     # Dev things
 
     flake-parts.url = "github:hercules-ci/flake-parts";

@@ -1,11 +1,9 @@
 { pkgs
 , username
 , stateVersion
-, inputs
 , ...
 }: {
   imports = [
-    inputs.vscode-server.nixosModules.home
     ./programs/vim/default.nix
     ./programs/zsh.nix
     ./programs/tmux.nix
@@ -50,9 +48,5 @@
       cachix
       claude-code
     ];
-  };
-
-  services = {
-    vscode-server.enable = true;
   };
 }

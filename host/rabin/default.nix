@@ -40,7 +40,6 @@
           "recipes.haganah.net"
           "ca.haganah.net"
           "home.haganah.net"
-          "cache.haganah.net"
           "registry.haganah.net"
         ];
       in
@@ -134,21 +133,7 @@
         };
       };
 
-      "cache.haganah.net" = {
-        forceSSL = true;
-        enableACME = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://localhost:5000";
-          };
-        };
-      };
     };
-  };
-
-  services.harmonia-dev.cache = {
-    enable = true;
-    signKeyPaths = [ config.age.secrets.haganah-cache.path ];
   };
 
   services.tandoor-recipes = {
@@ -317,8 +302,16 @@
   };
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.enable = false;
+  boot.loader.efi = {
+    canTouchEfiVariables = true;
+    efiSysMountPoint = "/boot";
+  };
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    device = "nodev";
+  };
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
