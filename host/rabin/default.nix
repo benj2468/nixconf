@@ -251,18 +251,6 @@
               };
             };
           }
-          {
-            shamir = {
-              description = "shamir";
-              icon = "tailscale.png";
-              href = "http://haganah.net";
-              widget = {
-                type = "tailscale";
-                deviceid = "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_SHAMIR}}";
-                key = "{{HOMEPAGE_VAR_TAILSCALE_API_KEY}}";
-              };
-            };
-          }
         ];
       }
     ];
