@@ -35,17 +35,12 @@
       servers = [ "pool.ntp.org" ];
     };
 
-    services.resolved = {
-      enable = true;
-      extraConfig = ''
-        DNSStubListener=no
-        DNSStubListenerExtra=0.0.0.0:53
-        DNSStubListenerExtra=[::]:53
-      '';
-    };
+    services.resolved.enable = false;
     services.dnsmasq = {
       enable = true;
-      settings.port = 0;
+      settings.server = lib.mkAfter [
+        "1.1.1.1"
+      ];
     };
 
     services.tailscale = {
@@ -61,7 +56,7 @@
       wget
       git
       gcc
-      neofetch
+      fastfetch
       tree
       jq
       yq
@@ -86,10 +81,10 @@
         panels = {
           enable_alpha = true;
         };
+        security.secret_key = "SW2YcwTIb9zpOOhoPsMm";
         server = {
           http_addr = "0.0.0.0";
           http_port = 3000;
-          # domain = lib.mkDefault hostname;
           root_url = lib.mkDefault "http://127.0.0.1/grafana/";
           serve_from_sub_path = true;
         };
@@ -130,36 +125,6 @@
             directory = "/var/lib/loki/chunks";
           };
         };
-      };
-    };
-
-    services.promtail = {
-      enable = true;
-      configuration = {
-        server = {
-          http_listen_port = 3031;
-          grpc_listen_port = 0;
-        };
-        positions = {
-          filename = "/tmp/positions.yaml";
-        };
-        clients = [{
-          url = "http://127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}/loki/api/v1/push";
-        }];
-        scrape_configs = [{
-          job_name = "journal";
-          journal = {
-            max_age = "12h";
-            labels = {
-              job = "systemd-journal";
-              host = "pihole";
-            };
-          };
-          relabel_configs = [{
-            source_labels = [ "__journal__systemd_unit" ];
-            target_label = "unit";
-          }];
-        }];
       };
     };
 

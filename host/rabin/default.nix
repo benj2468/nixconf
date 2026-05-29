@@ -59,7 +59,7 @@
   };
   services.nginx = {
     enable = true;
-    clientMaxBodySize = "100M";
+    clientMaxBodySize = "0";
 
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
@@ -144,6 +144,7 @@
       ALLOWED_HOSTS = "recipes.haganah.net";
       ENABLE_SIGNUP = 1;
       ENABLE_METRICS = 1;
+      MEDIA_ROOT = "/var/lib/tandoor-recipes/media";
     };
   };
 
@@ -161,7 +162,9 @@
   services.homepage-dashboard = {
     enable = true;
     allowedHosts = "*";
-    environmentFile = config.age.secrets.rabin-dashboard.path;
+    environmentFiles = [
+      config.age.secrets.rabin-dashboard.path
+    ];
     settings = {
       title = "Cape Homepage";
     };

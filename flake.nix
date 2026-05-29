@@ -2,11 +2,10 @@
   description = "A simple NixOS flake";
 
   inputs = {
-    # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
-    nixpkgs.url = "github:NixOS/nixpkgs/25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -36,7 +35,6 @@
         inputs.home-manager.flakeModules.home-manager
         inputs.git-hooks.flakeModule
         inputs.treefmt.flakeModule
-        # inputs.determinate.nixosModules.default
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       flake =
