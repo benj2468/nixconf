@@ -46,7 +46,15 @@
       lazygit
       nix-output-monitor
       cachix
-      claude-code
+    ];
+
+
+    file.".npmrc".text = ''
+      prefix=''${HOME}/.npm-packages
+    '';
+
+    sessionPath = [
+      "$HOME/.npm-packages/bin"
     ];
   };
 }

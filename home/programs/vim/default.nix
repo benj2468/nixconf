@@ -7,6 +7,8 @@
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
+    withPython3 = true;
+    withRuby = false;
     plugins = with pkgs.vimPlugins; [
       nerdtree
 

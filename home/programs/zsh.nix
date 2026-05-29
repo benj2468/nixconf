@@ -6,11 +6,6 @@
     completionInit = "autoload -U compinit && compinit -u"; # The -u flag ignores insecure directories
 
     initContent = ''
-
-      # Specifics for NPM
-      export PATH="$HOME/.npm-packages/bin:$PATH"
-      export NODE_PATH="$HOME/.npm-packages/lib/node_modules:$NODE_PATH"
-
       ZSH_TMUX_AUTOSTART=true
       ZSH_TMUX_FIXTERM=false
       ZSH_TMUX_CONFIG=$HOME/.config/tmux/tmux.conf
