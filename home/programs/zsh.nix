@@ -10,6 +10,11 @@
       ZSH_TMUX_FIXTERM=false
       ZSH_TMUX_CONFIG=$HOME/.config/tmux/tmux.conf
 
+      # Update SSH auth socket symlink
+      if [ "$SSH_AUTH_SOCK" ]; then
+        ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
+      fi
+
 
       # Define an init function and append to zvm_after_init_commands
       function my_init() {
