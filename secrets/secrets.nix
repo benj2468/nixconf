@@ -11,6 +11,9 @@ in
   "rabin-dashboard.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-1.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-2.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-3.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-4.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-5.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-beta.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-key.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-password.age".publicKeys = users ++ [ rabin ];

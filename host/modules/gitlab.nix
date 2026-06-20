@@ -1,21 +1,46 @@
-{ libx, pkgs, inputs, hostname, config, ... }:
+{ libx, lib, pkgs, inputs, hostname, config, ... }:
+let
+  dockerRunnerCount = config.haganah.gitlab.dockerRunnerCount;
+
+  mkDockerSecrets = count: if count == 0 then { } else
+  ((mkDockerSecrets (count - 1)) // {
+    "gitlab-runner-${toString count}" = {
+      file = "${inputs.self}/secrets/${hostname}-gitlab-runner-${toString count}.age";
+      owner = "gitlab";
+      group = "gitlab";
+    };
+  });
+  mkDockerRunners = count: if count == 0 then { } else
+  ((mkDockerRunners (count - 1)) // {
+    "runner-docker-${toString count}" = {
+      registrationFlags = [
+        "--tls-ca-file ${../modules/step-ca/root.crt}"
+      ];
+      dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
+      dockerImage = "docker:latest";
+      authenticationTokenConfigFile = config.age.secrets."gitlab-runner-${toString count}".path;
+    };
+  });
+in
 {
   options.haganah.gitlab = {
     enable = libx.mkTieredEnableOption config.haganah "Enable Opinionated Gitlab Server";
+
+    dockerRunnerCount = lib.mkOption {
+      type = lib.types.int;
+      default = 5;
+      description = ''
+        Number of docker gitlab runners to create with the default configuraiton.
+
+        The system configurer is responsible for ensuring that secrest exists for these named:
+
+        secrets/${hostname}-gitlab-runner-{count}.age
+      '';
+    };
   };
 
   config = libx.mkIf config.haganah.gitlab.enable {
-    age.secrets = {
-      gitlab-runner-1 = {
-        file = "${inputs.self}/secrets/${hostname}-gitlab-runner-1.age";
-        owner = "gitlab";
-        group = "gitlab";
-      };
-      gitlab-runner-2 = {
-        file = "${inputs.self}/secrets/${hostname}-gitlab-runner-2.age";
-        owner = "gitlab";
-        group = "gitlab";
-      };
+    age.secrets = (mkDockerSecrets dockerRunnerCount) // {
       gitlab-runner-nix = libx.mkSecret "rabin-gitlab-runner-beta" {
         owner = "gitlab";
         group = "gitlab";
@@ -64,23 +89,7 @@
       settings = {
         listen_address = "0.0.0.0:9252";
       };
-      services = {
-        runner-docker-1 = {
-          registrationFlags = [
-            "--tls-ca-file ${../modules/step-ca/root.crt}"
-          ];
-          dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
-          dockerImage = "docker:latest";
-          authenticationTokenConfigFile = config.age.secrets.gitlab-runner-1.path;
-        };
-        runner-docker-2 = {
-          registrationFlags = [
-            "--tls-ca-file ${../modules/step-ca/root.crt}"
-          ];
-          dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
-          dockerImage = "docker:latest";
-          authenticationTokenConfigFile = config.age.secrets.gitlab-runner-2.path;
-        };
+      services = (mkDockerRunners dockerRunnerCount) // {
         runner-nix = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
