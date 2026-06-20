@@ -16,7 +16,11 @@ let
       registrationFlags = [
         "--tls-ca-file ${../modules/step-ca/root.crt}"
       ];
-      dockerVolumes = [ "/var/run/docker.sock:/var/run/docker.sock" "/etc/hosts:/etc/hosts" ];
+      dockerVolumes = [
+        "/sccache:/sccache"
+        "/var/run/docker.sock:/var/run/docker.sock"
+        "/etc/hosts:/etc/hosts"
+      ];
       dockerImage = "docker:latest";
       authenticationTokenConfigFile = config.age.secrets."gitlab-runner-${toString count}".path;
     };

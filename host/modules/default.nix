@@ -7,5 +7,6 @@
     ./users.nix
     ./router.nix
     ./step-ca/module.nix
+    ./sccache.nix
   ];
 }

@@ -64,6 +64,7 @@
       cachix
       iotop
       home-manager
+      sccache
     ];
 
     environment.variables.EDITOR = "vim";
