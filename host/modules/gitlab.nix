@@ -92,6 +92,7 @@ in
       enable = true;
       settings = {
         listen_address = "0.0.0.0:9252";
+        concurrent = 100;
       };
       services = (mkDockerRunners dockerRunnerCount) // {
         runner-nix = {
