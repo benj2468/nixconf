@@ -33,7 +33,6 @@
       bat
       nodejs
       alejandra
-      silver-searcher
       glow
       xsel
       python3

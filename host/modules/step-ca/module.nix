@@ -1,4 +1,4 @@
-{ lib, libx, config, ... }:
+{ pkgs, lib, libx, config, ... }:
 let
   stepPerms = {
     owner = "step-ca";
@@ -29,6 +29,8 @@ in
         rabin-ca-inter-password = libx.mkSecret "rabin-ca-inter-password" stepPerms;
       };
 
+      environment.systemPackages = [ pkgs.step-cli ];
+
       services.step-ca = with config.age.secrets; {
         enable = true;
         address = "127.0.0.1";
@@ -57,9 +59,17 @@ in
                 name = "acme";
                 claims = {
                   enableSSHCA = true;
-                  disableRenewal = true;
-                  allowrenewalAfterExpiry = false;
+                  # Allow certificates to be renewed (re-issued) before they
+                  # expire so the ACME client can keep https endpoints valid.
+                  disableRenewal = false;
+                  allowRenewalAfterExpiry = false;
                   disableSmallstepExtensions = false;
+                  # Issue certificates valid for 90 days. Combined with the
+                  # ACME client renewing at 30 days remaining, this leaves a
+                  # 60 day window for automatic renewal to succeed.
+                  minTLSCertDuration = "5m";
+                  maxTLSCertDuration = "2160h";
+                  defaultTLSCertDuration = "2160h";
                 };
                 options = {
                   x509 = { };

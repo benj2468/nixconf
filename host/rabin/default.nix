@@ -55,6 +55,12 @@
     defaults = {
       email = "bcape@haganah.net";
       server = "https://127.0.0.1:${builtins.toString config.services.step-ca.port}/acme/acme/directory";
+      # Renew once a certificate has fewer than 30 days of validity left.
+      # step-ca issues 90 day certs, so renewal runs with a 60 day buffer.
+      validMinDays = 30;
+      # systemd timer that triggers the renewal check (no-op until the
+      # validMinDays threshold is reached).
+      renewInterval = "daily";
     };
   };
   services.nginx = {

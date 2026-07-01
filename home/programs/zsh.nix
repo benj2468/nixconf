@@ -1,8 +1,13 @@
-{ pkgs, lib, config, ... }: {
+{ pkgs, ... }: {
+  programs.atuin = {
+    enable = true;
+    enableZshIntegration = true;
+  };
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
     completionInit = "autoload -U compinit && compinit -u"; # The -u flag ignores insecure directories
 
     initContent = ''
@@ -14,16 +19,6 @@
       if [ "$SSH_AUTH_SOCK" ]; then
         ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
       fi
-
-
-      # Define an init function and append to zvm_after_init_commands
-      function my_init() {
-        # This is copied from the fzf program zsh integration, but we want to make sure we do it here...
-        if [[ $options[zle] = on ]]; then
-          source <(${lib.getExe config.programs.fzf.package} --zsh)
-        fi
-      }
-      zvm_after_init_commands+=(my_init)
     '';
 
     plugins = [

@@ -17,7 +17,6 @@
       coc-rust-analyzer
       coc-clangd
       coc-markdownlint
-      coc-cmake
       coc-toml
       coc-yaml
       coc-json
