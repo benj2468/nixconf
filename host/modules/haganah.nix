@@ -50,6 +50,7 @@
     };
 
     environment.systemPackages = with pkgs; [
+      podman-compose
       busybox
       lm_sensors
       vim
@@ -164,7 +165,12 @@
       };
     };
 
-    virtualisation.docker.enable = lib.mkDefault true;
+    virtualisation.podman = {
+      enable = lib.mkDefault true;
+      autoPrune.enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
 
     # Select internationalisation properties.
     i18n.defaultLocale = "en_US.UTF-8";
