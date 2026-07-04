@@ -165,11 +165,9 @@
       };
     };
 
-    virtualisation.podman = {
+    virtualisation.docker = {
       enable = lib.mkDefault true;
       autoPrune.enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
     };
 
     # Select internationalisation properties.
