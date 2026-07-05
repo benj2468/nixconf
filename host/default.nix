@@ -13,11 +13,15 @@
   nix = {
     optimise.automatic = true;
     settings = {
+      auto-allocate-uids = true;
       auto-optimise-store = true;
       experimental-features = [
         "nix-command"
         "flakes"
+        "auto-allocate-uids"
+        "cgroups"
       ];
+      system-features = [ "uid-range" ];
       trusted-users = [
         "root"
         "@wheel"
@@ -27,6 +31,7 @@
         "https://nix-community.cachix.org"
         "https://crane.cachix.org"
       ];
+      extra-sandbox-paths = [ "/dev/net/tun" ];
 
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
