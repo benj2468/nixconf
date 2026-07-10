@@ -1,5 +1,9 @@
 { libx, config, ... }:
 {
+  imports = [
+    ./registry-prune.nix
+  ];
+
   haganah = {
     enable = true;
     users.enable = true;
