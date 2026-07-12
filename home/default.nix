@@ -20,10 +20,6 @@
   programs.btop.enable = true;
   programs.lazygit.enable = true;
 
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-  };
 
   home = {
     inherit username stateVersion;

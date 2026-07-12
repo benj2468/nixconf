@@ -31,6 +31,7 @@
       vim-autoformat
       vim-floaterm
       fzf-vim
+      vim-tmux-navigator # C-h/j/k/l moves seamlessly between nvim splits and tmux panes
     ];
     extraConfig = ''
       let mapleader = ";"
