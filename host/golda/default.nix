@@ -3,6 +3,8 @@
 {
   haganah = {
     enable = true;
+    enableObservability = false;
+    enableTailscale = false;
     users.enable = true;
   };
 

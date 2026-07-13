@@ -3,208 +3,224 @@
 , pkgs
 , libx
 , ...
-}: {
+}:
+let cfg = config.haganah;
+in
+{
   options.haganah = {
     enable = lib.mkEnableOption "Enable Haganah Configurations";
+
+    enableObservability = lib.mkEnableOption "Enable Haganah Observability" // {
+      default = true;
+    };
+
+    enableTailscale = lib.mkEnableOption "Enable Tailscale" // {
+      default = true;
+    };
   };
 
-  config = lib.mkIf config.haganah.enable {
-
-    age.secrets = {
-      haganah-cache = libx.mkSecret "haganah-cache" {
-        mode = "440";
-        owner = "root";
-        group = "wheel";
-      };
-    };
-
-    programs.zsh.enable = true;
-
-    networking = {
-
-      # mkAfter puts this at the end of the list, rather than before 127.0.0.1
-      nameservers = lib.mkAfter [ "1.1.1.1" ];
-
-      useNetworkd = true;
-      networkmanager.enable = false;
-      dhcpcd.enable = false;
-    };
-
-    services.chrony = {
-      enable = true;
-      servers = [ "pool.ntp.org" ];
-    };
-
-    services.resolved.enable = false;
-    services.dnsmasq = {
-      enable = true;
-      settings.server = lib.mkAfter [
-        "1.1.1.1"
-      ];
-    };
-
-    services.tailscale = {
-      enable = true;
-      openFirewall = true;
-      useRoutingFeatures = lib.mkDefault "client";
-    };
-
-    environment.systemPackages = with pkgs; [
-      podman-compose
-      busybox
-      lm_sensors
-      vim
-      wget
-      git
-      gcc
-      fastfetch
-      tree
-      jq
-      yq
-      agenix
-      cachix
-      iotop
-      home-manager
-      sccache
-    ];
-
-    environment.variables.EDITOR = "vim";
-
-    services.openssh = {
-      enable = true;
-      settings.PasswordAuthentication = true;
-    };
-
-    services.sshd.enable = true;
-
-    services.grafana = {
-      enable = lib.mkDefault true;
-      settings = {
-        panels = {
-          enable_alpha = true;
-        };
-        security.secret_key = "SW2YcwTIb9zpOOhoPsMm";
-        server = {
-          http_addr = "0.0.0.0";
-          http_port = 3000;
-          root_url = lib.mkDefault "http://127.0.0.1/grafana/";
-          serve_from_sub_path = true;
-        };
-      };
-    };
-
-    services.loki = {
-      enable = true;
-      configuration = {
-        server.http_listen_port = 3030;
-        auth_enabled = false;
-        common = {
-          ring = {
-            instance_addr = "127.0.0.1";
-            kvstore = {
-              store = "inmemory";
-            };
-          };
-          replication_factor = 1;
-          path_prefix = "/tmp/loki";
-        };
-
-        schema_config = {
-          configs = [{
-            from = "2022-06-06";
-            store = "tsdb";
-            object_store = "filesystem";
-            schema = "v13";
-            index = {
-              prefix = "index_";
-              period = "24h";
-            };
-          }];
-        };
-
-        storage_config = {
-          filesystem = {
-            directory = "/var/lib/loki/chunks";
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        age.secrets = {
+          haganah-cache = libx.mkSecret "haganah-cache" {
+            mode = "440";
+            owner = "root";
+            group = "wheel";
           };
         };
-      };
-    };
 
-    services.prometheus = {
-      enable = lib.mkDefault true;
+        programs.zsh.enable = true;
 
-      scrapeConfigs = [
-        {
-          job_name = "node";
-          static_configs = [{
-            targets = [ "localhost:${toString config.services.prometheus.exporters.node.port}" ];
-          }];
-        }
-        {
-          job_name = "nginx";
-          static_configs = [{
-            targets = [ "localhost:${toString config.services.prometheus.exporters.nginx.port}" ];
-          }];
-        }
-      ];
+        networking = {
 
-      exporters = {
-        node = {
+          # mkAfter puts this at the end of the list, rather than before 127.0.0.1
+          nameservers = lib.mkAfter [ "1.1.1.1" ];
+
+          useNetworkd = true;
+          networkmanager.enable = false;
+          dhcpcd.enable = false;
+        };
+
+        services.chrony = {
           enable = true;
-          port = 9100;
-          enabledCollectors = [
-            "logind"
-            "systemd"
-          ];
-          disabledCollectors = [
-            "textfile"
-          ];
-          openFirewall = true;
-          firewallFilter = "-i br0 -p tcp -m tcp --dport 9100";
+          servers = [ "pool.ntp.org" ];
         };
-      };
-    };
 
-    virtualisation.docker = {
-      enable = lib.mkDefault true;
-      autoPrune.enable = true;
-    };
+        services.resolved.enable = false;
+        services.dnsmasq = {
+          enable = true;
+          settings.server = lib.mkAfter [
+            "1.1.1.1"
+          ];
+        };
 
-    # Select internationalisation properties.
-    i18n.defaultLocale = "en_US.UTF-8";
+        environment.systemPackages = with pkgs; [
+          podman-compose
+          busybox
+          lm_sensors
+          vim
+          wget
+          git
+          gcc
+          fastfetch
+          tree
+          jq
+          yq
+          agenix
+          cachix
+          iotop
+          home-manager
+          sccache
+        ];
 
-    i18n.extraLocaleSettings = {
-      LC_ADDRESS = "en_US.UTF-8";
-      LC_IDENTIFICATION = "en_US.UTF-8";
-      LC_MEASUREMENT = "en_US.UTF-8";
-      LC_MONETARY = "en_US.UTF-8";
-      LC_NAME = "en_US.UTF-8";
-      LC_NUMERIC = "en_US.UTF-8";
-      LC_PAPER = "en_US.UTF-8";
-      LC_TELEPHONE = "en_US.UTF-8";
-      LC_TIME = "en_US.UTF-8";
-    };
+        environment.variables.EDITOR = "vim";
 
-    # Keep the computer from sleeping
-    systemd.targets.sleep.enable = false;
-    systemd.targets.suspend.enable = false;
-    systemd.targets.hibernate.enable = false;
-    systemd.targets.hybrid-sleep.enable = false;
+        services.openssh = {
+          enable = true;
+          settings.PasswordAuthentication = true;
+        };
 
-    nix = {
-      settings = {
-        secret-key-files = [ config.age.secrets.haganah-cache.path ];
-        trusted-users = [ "ci" ];
-      };
-      buildMachines = [
-        {
-          hostName = "gantz";
-          system = "aarch64-linux";
-          protocol = "ssh";
-          supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "uid-range" ];
-        }
-      ];
-      distributedBuilds = true;
-    };
-  };
+        services.sshd.enable = true;
+
+        virtualisation.docker = {
+          enable = lib.mkDefault true;
+          autoPrune.enable = true;
+        };
+        # Select internationalisation properties.
+        i18n.defaultLocale = "en_US.UTF-8";
+
+        i18n.extraLocaleSettings = {
+          LC_ADDRESS = "en_US.UTF-8";
+          LC_IDENTIFICATION = "en_US.UTF-8";
+          LC_MEASUREMENT = "en_US.UTF-8";
+          LC_MONETARY = "en_US.UTF-8";
+          LC_NAME = "en_US.UTF-8";
+          LC_NUMERIC = "en_US.UTF-8";
+          LC_PAPER = "en_US.UTF-8";
+          LC_TELEPHONE = "en_US.UTF-8";
+          LC_TIME = "en_US.UTF-8";
+        };
+
+        # Keep the computer from sleeping
+        systemd.targets.sleep.enable = false;
+        systemd.targets.suspend.enable = false;
+        systemd.targets.hibernate.enable = false;
+        systemd.targets.hybrid-sleep.enable = false;
+
+        nix = {
+          settings = {
+            secret-key-files = [ config.age.secrets.haganah-cache.path ];
+            trusted-users = [ "ci" ];
+          };
+          buildMachines = [
+            {
+              hostName = "gantz";
+              system = "aarch64-linux";
+              protocol = "ssh";
+              supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "uid-range" ];
+            }
+          ];
+          distributedBuilds = true;
+        };
+
+      }
+      (lib.mkIf cfg.enableTailscale {
+        services.tailscale = {
+          enable = true;
+          openFirewall = true;
+          useRoutingFeatures = lib.mkDefault "client";
+        };
+      })
+      (lib.mkIf cfg.enableObservability {
+
+        services.grafana = {
+          enable = lib.mkDefault true;
+          settings = {
+            panels = {
+              enable_alpha = true;
+            };
+            security.secret_key = "SW2YcwTIb9zpOOhoPsMm";
+            server = {
+              http_addr = "0.0.0.0";
+              http_port = 3000;
+              root_url = lib.mkDefault "http://127.0.0.1/grafana/";
+              serve_from_sub_path = true;
+            };
+          };
+        };
+
+        services.loki = {
+          enable = true;
+          configuration = {
+            server.http_listen_port = 3030;
+            auth_enabled = false;
+            common = {
+              ring = {
+                instance_addr = "127.0.0.1";
+                kvstore = {
+                  store = "inmemory";
+                };
+              };
+              replication_factor = 1;
+              path_prefix = "/tmp/loki";
+            };
+
+            schema_config = {
+              configs = [{
+                from = "2022-06-06";
+                store = "tsdb";
+                object_store = "filesystem";
+                schema = "v13";
+                index = {
+                  prefix = "index_";
+                  period = "24h";
+                };
+              }];
+            };
+
+            storage_config = {
+              filesystem = {
+                directory = "/var/lib/loki/chunks";
+              };
+            };
+          };
+        };
+
+        services.prometheus = {
+          enable = lib.mkDefault true;
+
+          scrapeConfigs = [
+            {
+              job_name = "node";
+              static_configs = [{
+                targets = [ "localhost:${toString config.services.prometheus.exporters.node.port}" ];
+              }];
+            }
+            {
+              job_name = "nginx";
+              static_configs = [{
+                targets = [ "localhost:${toString config.services.prometheus.exporters.nginx.port}" ];
+              }];
+            }
+          ];
+
+          exporters = {
+            node = {
+              enable = true;
+              port = 9100;
+              enabledCollectors = [
+                "logind"
+                "systemd"
+              ];
+              disabledCollectors = [
+                "textfile"
+              ];
+              openFirewall = true;
+              firewallFilter = "-i br0 -p tcp -m tcp --dport 9100";
+            };
+          };
+        };
+      })
+    ]);
 }
