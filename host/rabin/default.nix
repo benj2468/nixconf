@@ -22,9 +22,14 @@
     rabin-dashboard = libx.mkSecret "rabin-dashboard" { };
   };
 
+  services.tailscale.extraSetFlags = [ "--accept-dns=false" ];
+
   networking = {
 
-    firewall.allowedTCPPorts = [ 443 80 53 ];
+    firewall = {
+      allowedTCPPorts = [ 443 80 53 ];
+      allowedUDPPorts = [ 53 ];
+    };
 
     hosts =
       let
@@ -125,7 +130,7 @@
 
       "recipes.haganah.net" = {
         locations = {
-          "/media/".alias = "/var/lib/tandoor-recipes/";
+          "/media/".alias = "/var/lib/tandoor-recipes/media/";
           "/" = {
             proxyPass = "http://localhost:${builtins.toString config.services.tandoor-recipes.port}";
             proxyWebsockets = true;
