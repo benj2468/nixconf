@@ -22,9 +22,11 @@ in
 
     nix.settings.trusted-users = [ "bcape" "admin" "ci" ];
 
+
+
     users.users.bcape = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "docker" "users" ] ++ optionalLibVirt;
+      extraGroups = [ "wheel" "networkmanager" "docker" "users" "dialout" "tty" "plugdev" ] ++ optionalLibVirt;
       description = "Benjamin Cape";
       shell = pkgs.zsh;
 
@@ -50,5 +52,8 @@ in
     };
 
     users.groups.ci = { };
+    users.groups.dialout = { };
+    users.groups.tty = { };
+    users.groups.plugdev = { };
   };
 }

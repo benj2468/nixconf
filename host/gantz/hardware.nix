@@ -6,6 +6,9 @@
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+
   fileSystems."/" =
     {
       device = "/dev/disk/by-uuid/a1bb82e7-9fe4-4402-b81b-9f215f105762";
