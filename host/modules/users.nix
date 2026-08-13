@@ -26,7 +26,7 @@ in
 
     users.users.bcape = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "docker" "users" "dialout" "tty" "plugdev" ] ++ optionalLibVirt;
+      extraGroups = [ "wheel" "networkmanager" "docker" "users" "dialout" "tty" "plugdev" "wireshark" ] ++ optionalLibVirt;
       description = "Benjamin Cape";
       shell = pkgs.zsh;
 

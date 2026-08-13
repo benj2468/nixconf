@@ -30,6 +30,7 @@ in
           };
         };
 
+        programs.wireshark.enable = true;
         programs.zsh.enable = true;
 
         networking = {
@@ -72,6 +73,7 @@ in
           iotop
           home-manager
           sccache
+          termshark
         ];
 
         environment.variables.EDITOR = "vim";
@@ -113,14 +115,6 @@ in
             secret-key-files = [ config.age.secrets.haganah-cache.path ];
             trusted-users = [ "ci" ];
           };
-          buildMachines = [
-            {
-              hostName = "gantz";
-              system = "aarch64-linux";
-              protocol = "ssh";
-              supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "uid-range" ];
-            }
-          ];
           distributedBuilds = true;
         };
 

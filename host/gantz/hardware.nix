@@ -1,13 +1,25 @@
-{ lib, ... }: {
+{ lib, config, ... }: {
   imports = [ ];
 
   boot.initrd.availableKernelModules = [ "ehci_pci" "ahci" "xhci_pci" "nvme" "usbhid" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
 
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
+  boot.kernelModules = [ "8821cu" ];
+  boot.extraModulePackages = [
+    config.boot.kernelPackages.rtl8821cu
+  ];
+
+  hardware.enableRedistributableFirmware = true;
+
+  hardware.bluetooth = {
+    enable = true;
+    settings.General = {
+      Experimental = true;
+      Privacy = "device";
+    };
+    powerOnBoot = true;
+  };
+
 
   fileSystems."/" =
     {
