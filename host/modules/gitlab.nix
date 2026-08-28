@@ -22,6 +22,7 @@ let
         "/etc/hosts:/etc/hosts"
       ];
       dockerImage = "docker:latest";
+      dockerDisableCache = true;
       authenticationTokenConfigFile = config.age.secrets."gitlab-runner-${toString count}".path;
     };
   });
@@ -107,6 +108,7 @@ in
               "${config.age.secrets.ci-private-key.path}:/root/.ssh/id_rsa:ro"
             ];
           dockerImage = "nixos/nix";
+          dockerDisableCache = true;
           authenticationTokenConfigFile = config.age.secrets.gitlab-runner-nix.path;
         };
       };

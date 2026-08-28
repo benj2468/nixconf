@@ -87,7 +87,11 @@ in
 
         virtualisation.docker = {
           enable = lib.mkDefault true;
-          autoPrune.enable = true;
+          autoPrune = {
+            enable = true;
+            dates = "daily";
+            allVolumes.enable = true;
+          };
         };
         # Select internationalisation properties.
         i18n.defaultLocale = "en_US.UTF-8";
