@@ -10,7 +10,7 @@ let
   # closely enough.
   pruneScript = pkgs.writeShellApplication {
     name = "registry-prune-dev";
-    runtimeInputs = [ pkgs.curl pkgs.jq pkgs.podman pkgs.coreutils ];
+    runtimeInputs = [ pkgs.curl pkgs.jq pkgs.podman pkgs.coreutils pkgs.gnugrep pkgs.gawk ];
     text = ''
       REGISTRY="${registryUrl}"
       MAX_AGE=$(( 7 * 24 * 60 * 60 ))   # one week, in seconds
@@ -34,7 +34,10 @@ let
           # Content digest of the manifest, needed to delete it.
           headers=$(curl -fsSI -H "$ACCEPT" "$REGISTRY/v2/$repo/manifests/$tag" || true)
           digest=$(printf '%s' "$headers" | grep -i '^docker-content-digest:' | awk '{print $2}' | tr -d '\r' || true)
-          [ -n "$digest" ] || continue
+          if [ -z "$digest" ]; then
+            echo "  no content digest for $repo:$tag; skipping" >&2
+            continue
+          fi
 
           manifest=$(curl -fsS -H "$ACCEPT" "$REGISTRY/v2/$repo/manifests/$tag" || true)
           [ -n "$manifest" ] || continue
