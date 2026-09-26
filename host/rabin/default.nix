@@ -2,6 +2,7 @@
 {
   imports = [
     ./registry-prune.nix
+    ./postgresql.nix
   ];
 
   haganah = {
