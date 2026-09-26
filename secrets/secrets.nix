@@ -15,6 +15,13 @@ in
   "rabin-gitlab-runner-4.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-5.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-beta.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-secret-key-base.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-otp-key-base.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-db-key-base.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-ar-salt.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-ar-primary-key.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-ar-deterministic-key.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-initial-root-password.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-key.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-password.age".publicKeys = users ++ [ rabin ];
   "haganah-cache.age".publicKeys = users ++ machines;

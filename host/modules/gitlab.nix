@@ -78,6 +78,41 @@ in
         owner = "gitlab";
         group = "gitlab";
       };
+    } // {
+      # GitLab's own keys. These used to be `pkgs.writeText` literals in this
+      # (public) repo and so in the world-readable store; secret_key_base and
+      # the initial root password were rotated in the move. db_key_base, the
+      # ActiveRecord keys and otp_key_base kept their values, because rotating
+      # them makes existing encrypted data (CI/CD variables, tokens, 2FA seeds)
+      # unreadable — see docs/rabin-gitlab-19-upgrade.md.
+      gitlab-secret-key-base = libx.mkSecret "rabin-gitlab-secret-key-base" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-otp-key-base = libx.mkSecret "rabin-gitlab-otp-key-base" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-db-key-base = libx.mkSecret "rabin-gitlab-db-key-base" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-ar-salt = libx.mkSecret "rabin-gitlab-ar-salt" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-ar-primary-key = libx.mkSecret "rabin-gitlab-ar-primary-key" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-ar-deterministic-key = libx.mkSecret "rabin-gitlab-ar-deterministic-key" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-initial-root-password = libx.mkSecret "rabin-gitlab-initial-root-password" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
     };
 
     environment.systemPackages = with pkgs; [
@@ -141,8 +176,9 @@ in
 
     services.gitlab = {
       enable = true;
-      databasePasswordFile = pkgs.writeText "dbPassword" "24HKq$LnVsHqExYL";
-      initialRootPasswordFile = pkgs.writeText "rootPassword" "dakqdvp4ovhksxer";
+      # No databasePasswordFile: GitLab reaches its local PostgreSQL over the
+      # unix socket with peer auth, so a password was never used.
+      initialRootPasswordFile = config.age.secrets.gitlab-initial-root-password.path;
       host = "git.haganah.net";
       port = 443;
       https = true;
@@ -161,13 +197,13 @@ in
         };
       };
       secrets = {
-        secretFile = pkgs.writeText "secret" "Aig5zaic";
-        otpFile = pkgs.writeText "otpsecret" "Riew9mue";
-        dbFile = pkgs.writeText "dbsecret" "we2quaeZ";
+        secretFile = config.age.secrets.gitlab-secret-key-base.path;
+        otpFile = config.age.secrets.gitlab-otp-key-base.path;
+        dbFile = config.age.secrets.gitlab-db-key-base.path;
         jwsFile = pkgs.runCommand "oidcKeyBase" { } "${pkgs.openssl}/bin/openssl genrsa 2048 > $out";
-        activeRecordSaltFile = pkgs.writeText "salt" "5n*FfqwjVCQXdYa^";
-        activeRecordPrimaryKeyFile = pkgs.writeText "key" "x%8wKLT1pK@aq9Qw";
-        activeRecordDeterministicKeyFile = pkgs.writeText "key" "j&eekrQB!335XpvK";
+        activeRecordSaltFile = config.age.secrets.gitlab-ar-salt.path;
+        activeRecordPrimaryKeyFile = config.age.secrets.gitlab-ar-primary-key.path;
+        activeRecordDeterministicKeyFile = config.age.secrets.gitlab-ar-deterministic-key.path;
       };
     };
 
