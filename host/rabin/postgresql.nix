@@ -5,7 +5,7 @@ let
   # The major version this host is moving *to*. GitLab 19 in nixpkgs asserts
   # PostgreSQL >= 17, and the cluster here was created at 16 (the default for
   # `stateVersion = "25.05"`), so the upgrade has to happen before nixpkgs is
-  # bumped past GitLab 19.2 — see `docs/postgresql-upgrade.md`.
+  # bumped past GitLab 18.11 — see `docs/rabin-gitlab-19-upgrade.md`.
   newPostgres = pkgs.postgresql_17.withPackages (_: [ ]);
 in
 {
