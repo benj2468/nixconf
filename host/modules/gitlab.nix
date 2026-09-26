@@ -84,7 +84,8 @@ in
       # the initial root password were rotated in the move. db_key_base, the
       # ActiveRecord keys and otp_key_base kept their values, because rotating
       # them makes existing encrypted data (CI/CD variables, tokens, 2FA seeds)
-      # unreadable — see docs/rabin-gitlab-19-upgrade.md.
+      # unreadable; if they ever must be rotated, follow GitLab's "lost secrets"
+      # procedure, which resets CI/CD variables, runner tokens and 2FA.
       gitlab-secret-key-base = libx.mkSecret "rabin-gitlab-secret-key-base" {
         owner = "gitlab";
         group = "gitlab";
