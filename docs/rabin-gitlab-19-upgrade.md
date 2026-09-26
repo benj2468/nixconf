@@ -15,14 +15,19 @@ check each one before the next. The deploy command is whatever you normally
 use, for example `nixos-rebuild switch --flake .#rabin` on rabin, or with
 `--target-host`, at that commit.
 
-## Step A: `d4c3c3e` + `30f4052` (still GitLab 18.11.7, PostgreSQL 16)
+## Step A: `d4c3c3e` … `831fa11` (still GitLab 18.11.7, PostgreSQL 16)
 
-These commits add the `upgrade-pg-cluster` script and cap CI (`concurrent = 3`,
-with job containers in `ci.slice`). Deploy the second commit, `30f4052`.
-Nothing else changes; the runners re-register with the new flag by
-themselves.
+These commits:
 
-## Step B: `e6a71bf` (PostgreSQL 17)
+- add the `upgrade-pg-cluster` script;
+- cap CI (`concurrent = 3`, with job containers in `ci.slice`);
+- move GitLab's secrets into agenix.
+
+Deploy the last one, `831fa11`. The runners re-register with the new flag by
+themselves. Because `secret_key_base` is rotated, **everyone is signed out
+once**. Nothing else changes.
+
+## Step B: `bd9cab8` (PostgreSQL 17)
 
 On rabin, as root:
 
@@ -42,7 +47,7 @@ du -sh /var/lib/postgresql/16 && df -h /var/lib/postgresql
 upgrade-pg-cluster
 ```
 
-Then deploy `e6a71bf`. It points the module at
+Then deploy `bd9cab8`. It points the module at
 `/var/lib/postgresql/17`, and GitLab and Tandoor start on the new cluster.
 
 - **Don't** deploy it before step 4. The module would start an empty
@@ -59,7 +64,7 @@ Keep `/var/lib/postgresql/16` until you're sure. After that,
 `/var/lib/postgresql/17/delete_old_cluster.sh` (written by `pg_upgrade`)
 removes it.
 
-## Step C: `4103adf` (GitLab 19.2.4)
+## Step C: `656407e` (GitLab 19.2.4)
 
 Deploy it. GitLab runs its migrations on start. Then **wait until the
 batched background migrations are finished**:
@@ -71,7 +76,7 @@ batched background migrations are finished**:
 
 This can take minutes to hours. Don't start step D until it's done.
 
-## Step D: `c0b2f75` (GitLab 19.3.3, latest nixos-unstable)
+## Step D: `5879e30` (GitLab 19.3.3, latest nixos-unstable)
 
 Deploy it. This is the nixpkgs update you originally wanted.
 
@@ -85,3 +90,13 @@ Deploy it. This is the nixpkgs update you originally wanted.
   the GitLab data backup, not just the generation. Take a GitLab backup
   (`sudo gitlab-rake gitlab:backup:create`) before step C if you want that
   option.
+
+## Secrets still to rotate by hand
+
+`db_key_base`, the three ActiveRecord encryption keys and `otp_key_base` were
+public in this repo and kept their values in the move to agenix. Rotating them
+makes existing encrypted data unreadable, so it is a separate decision. If it
+is ever taken, follow GitLab's "lost secrets" procedure. It resets CI/CD
+variables, runner and integration tokens, and 2FA, all of which then have to
+be re-entered. Their exposure is limited to whoever can reach `git.haganah.net`,
+which today means the tailnet.
