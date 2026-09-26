@@ -11,8 +11,10 @@ in
 {
   # Pinned explicitly rather than left to follow `stateVersion`, so the major
   # version of the on-disk cluster is a visible, deliberate line in the config.
-  # Bump this only after running `upgrade-pg-cluster` on the host.
-  services.postgresql.package = pkgs.postgresql_16;
+  # 17 since `upgrade-pg-cluster` moved the data to /var/lib/postgresql/17; the
+  # module derives `dataDir` from this, so deploying it before the upgrade would
+  # start an empty cluster.
+  services.postgresql.package = pkgs.postgresql_17;
 
   # The NixOS manual's `pg_upgrade` wrapper
   # (https://nixos.org/manual/nixos/stable/#module-services-postgres-upgrading),
