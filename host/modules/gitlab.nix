@@ -15,6 +15,9 @@ let
     "runner-docker-${toString count}" = {
       registrationFlags = [
         "--tls-ca-file ${../modules/step-ca/root.crt}"
+        # Every job container lands in `ci.slice` (below), which caps what CI
+        # can take from the GitLab server it shares this host with.
+        "--docker-cgroup-parent ci.slice"
       ];
       dockerVolumes = [
         "/sccache:/sccache"
@@ -30,6 +33,27 @@ in
 {
   options.haganah.gitlab = {
     enable = libx.mkTieredEnableOption config.haganah "Enable Opinionated Gitlab Server";
+
+    concurrentJobs = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 3;
+      description = ''
+        Jobs all runners on this host may run at once. The runners share the
+        host with GitLab itself, and an uncapped CI fan-out has been enough to
+        make GitLab stop answering.
+      '';
+    };
+
+    ciMemoryMax = lib.mkOption {
+      type = lib.types.str;
+      default = "70%";
+      description = ''
+        Hard memory ceiling for all CI job containers together (`ci.slice`), as
+        systemd accepts it — a share of physical RAM or an absolute size. What is
+        left is GitLab's: past it the kernel OOM-kills inside the slice, not
+        Puma, Sidekiq or PostgreSQL.
+      '';
+    };
 
     dockerRunnerCount = lib.mkOption {
       type = lib.types.int;
@@ -93,12 +117,13 @@ in
       enable = true;
       settings = {
         listen_address = "0.0.0.0:9252";
-        concurrent = 100;
+        concurrent = config.haganah.gitlab.concurrentJobs;
       };
       services = (mkDockerRunners dockerRunnerCount) // {
         runner-nix = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
+            "--docker-cgroup-parent ci.slice"
           ];
           dockerVolumes =
             [
@@ -144,6 +169,14 @@ in
         activeRecordPrimaryKeyFile = pkgs.writeText "key" "x%8wKLT1pK@aq9Qw";
         activeRecordDeterministicKeyFile = pkgs.writeText "key" "j&eekrQB!335XpvK";
       };
+    };
+
+    # The slice every docker runner's job containers are parented to. A low CPU
+    # weight means CI yields to GitLab under contention without being throttled
+    # when the host is idle.
+    systemd.slices.ci.sliceConfig = {
+      CPUWeight = 20;
+      MemoryMax = config.haganah.gitlab.ciMemoryMax;
     };
 
     services.openssh.enable = true;
