@@ -15,6 +15,8 @@ in
   "rabin-gitlab-runner-4.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-5.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-runner-beta.age".publicKeys = users ++ [ rabin ];
+  "rabin-gitlab-runner-privileged.age".publicKeys = users ++ [ rabin ];
+  "rabin-attic-server-token.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-secret-key-base.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-otp-key-base.age".publicKeys = users ++ [ rabin ];
   "rabin-gitlab-db-key-base.age".publicKeys = users ++ [ rabin ];

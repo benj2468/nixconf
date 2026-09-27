@@ -1,6 +1,7 @@
 { libx, config, ... }:
 {
   imports = [
+    ./attic.nix
     ./registry-prune.nix
     ./postgresql.nix
   ];

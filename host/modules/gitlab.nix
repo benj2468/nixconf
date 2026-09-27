@@ -23,7 +23,13 @@ let
         "/sccache:/sccache"
         "/var/run/docker.sock:/var/run/docker.sock"
         "/etc/hosts:/etc/hosts"
+        # Lets a Nix job verify cache.haganah.net's step-ca certificate; see
+        # runner-privileged below.
+        "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/haganah-ca-bundle.crt:ro"
       ];
+      environmentVariables = {
+        NIX_SSL_CERT_FILE = "/etc/ssl/certs/haganah-ca-bundle.crt";
+      };
       dockerImage = "docker:latest";
       dockerDisableCache = true;
       authenticationTokenConfigFile = config.age.secrets."gitlab-runner-${toString count}".path;
@@ -71,6 +77,10 @@ in
   config = libx.mkIf config.haganah.gitlab.enable {
     age.secrets = (mkDockerSecrets dockerRunnerCount) // {
       gitlab-runner-nix = libx.mkSecret "rabin-gitlab-runner-beta" {
+        owner = "gitlab";
+        group = "gitlab";
+      };
+      gitlab-runner-privileged = libx.mkSecret "rabin-gitlab-runner-privileged" {
         owner = "gitlab";
         group = "gitlab";
       };
@@ -156,6 +166,22 @@ in
         concurrent = config.haganah.gitlab.concurrentJobs;
       };
       services = (mkDockerRunners dockerRunnerCount) // {
+        runner-privileged = {
+          registrationFlags = [
+            "--tls-ca-file ${../modules/step-ca/root.crt}"
+          ];
+          dockerPrivileged = true;
+          dockerVolumes = [
+            "/sccache:/sccache"
+            "/etc/hosts:/etc/hosts"
+            "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/haganah-ca-bundle.crt:ro"
+          ];
+          dockerImage = "alpine:latest";
+          environmentVariables = {
+            NIX_SSL_CERT_FILE = "/etc/ssl/certs/haganah-ca-bundle.crt";
+          };
+          authenticationTokenConfigFile = config.age.secrets.gitlab-runner-privileged.path;
+        };
         runner-nix = {
           registrationFlags = [
             "--tls-ca-file ${../modules/step-ca/root.crt}"
