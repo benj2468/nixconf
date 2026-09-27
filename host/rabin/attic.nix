@@ -15,7 +15,12 @@
 #     --pull '*' --push '*' --create-cache '*' --configure-cache '*' \
 #     --configure-cache-retention '*' --destroy-cache '*' --delete '*'
 #   attic login haganah https://cache.haganah.net <admin token>
-#   attic cache create haganah:<cache>
+#   attic cache create --public haganah:<cache>
+#
+# `--public` because pulls come from pipelines holding no token: a push token
+# is a *protected* CI variable, so only `main` has one, and an MR pipeline must
+# still be able to substitute. Anonymous reads are fine for a cache that only
+# resolves on the haganah network; writes always need a token.
 #   attic cache info haganah:<cache>          # prints the public key
 #
 # and per CI consumer a push token scoped to its own cache:
