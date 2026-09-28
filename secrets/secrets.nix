@@ -25,5 +25,9 @@ in
   "rabin-ca-inter-key.age".publicKeys = users ++ [ rabin ];
   "rabin-ca-inter-password.age".publicKeys = users ++ [ rabin ];
   "haganah-cache.age".publicKeys = users ++ machines;
+  # The R2 binary cache (github.com/benj2468/haganah-infra, cloudflare/):
+  # its signing key, and the nix daemon's read-only credentials for the bucket.
+  "haganah-nix-cache-1.age".publicKeys = users ++ machines;
+  "haganah-nix-cache-r2.age".publicKeys = users ++ machines;
   "ci-private-key.age".publicKeys = users ++ machines;
 }

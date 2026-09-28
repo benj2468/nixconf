@@ -4,7 +4,16 @@
 , libx
 , ...
 }:
-let cfg = config.haganah;
+let
+  cfg = config.haganah;
+
+  # The R2 binary cache, defined in github.com/benj2468/haganah-infra
+  # (cloudflare/r2.tf, whose `nix_cache_url` output this is). Its public key is
+  # not a secret; the private half is the haganah-nix-cache-1 age secret.
+  nixCache = {
+    url = "s3://haganah-nix-cache?endpoint=90158d26c50c77657b996f24c7d44142.r2.cloudflarestorage.com&region=auto";
+    publicKey = "haganah-nix-cache-1:AqKW0D4ff5y5TeFPMfl10EIQqMpDC+zhIU3hWWDMGNM=";
+  };
 in
 {
   options.haganah = {
@@ -27,6 +36,22 @@ in
             mode = "440";
             owner = "root";
             group = "wheel";
+          };
+          # The R2 binary cache's signing key (see `nixCache` below). Same
+          # permissions as haganah-cache: the daemon signs as root, and wheel
+          # can `nix store sign` a path by hand before pushing it.
+          haganah-nix-cache-1 = libx.mkSecret "haganah-nix-cache-1" {
+            mode = "440";
+            owner = "root";
+            group = "wheel";
+          };
+          # AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY for the bucket, read-only:
+          # machines substitute from the cache, and only CI uploads to it.
+          # The daemon alone reads it, so root-only.
+          haganah-nix-cache-r2 = libx.mkSecret "haganah-nix-cache-r2" {
+            mode = "400";
+            owner = "root";
+            group = "root";
           };
         };
 
@@ -116,11 +141,30 @@ in
 
         nix = {
           settings = {
-            secret-key-files = [ config.age.secrets.haganah-cache.path ];
+            # Every local build is signed with both keys: haganah-cache for
+            # whatever still trusts it, haganah-nix-cache-1 so a path built
+            # here can be pushed to the R2 cache as-is.
+            secret-key-files = [
+              config.age.secrets.haganah-cache.path
+              config.age.secrets.haganah-nix-cache-1.path
+            ];
             trusted-users = [ "ci" ];
+            # The R2 cache CI fills (wayfinder's `.github/actions/nix`). Extra,
+            # not a replacement: cache.nixos.org and the cachix caches stay
+            # first, and a path missing here is just fetched or built. The
+            # bucket is private, so the daemon authenticates with the
+            # read-only credentials below.
+            extra-substituters = [ nixCache.url ];
+            extra-trusted-public-keys = [ nixCache.publicKey ];
           };
           distributedBuilds = true;
         };
+        # `-`: optional. A host whose key is not yet a recipient of the secret
+        # (secrets/secrets.nix) then runs a daemon that cannot read the R2
+        # cache, rather than no daemon at all — systemd refuses to start a
+        # unit whose EnvironmentFile is missing.
+        systemd.services.nix-daemon.serviceConfig.EnvironmentFile =
+          "-${config.age.secrets.haganah-nix-cache-r2.path}";
 
       }
       (lib.mkIf cfg.enableTailscale {
