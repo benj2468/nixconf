@@ -13,7 +13,24 @@ let
   nixCache = {
     url = "s3://haganah-nix-cache?endpoint=90158d26c50c77657b996f24c7d44142.r2.cloudflarestorage.com&region=auto";
     publicKey = "haganah-nix-cache-1:AqKW0D4ff5y5TeFPMfl10EIQqMpDC+zhIU3hWWDMGNM=";
+    # Uploads only: every narinfo records its own compression, so readers
+    # don't care, and zstd is several times faster than the default xz.
+    pushUrl = "s3://haganah-nix-cache?endpoint=90158d26c50c77657b996f24c7d44142.r2.cloudflarestorage.com&region=auto&compression=zstd";
+    # Paths built here and not yet uploaded, one per line.
+    queue = "/var/lib/haganah-nix-cache/queue";
   };
+
+  # nix's post-build hook. It runs synchronously after every build, blocking
+  # the build loop, and a non-zero exit fails the build — so it only records
+  # the outputs and never fails; the upload happens in
+  # haganah-nix-cache-push, off the build's critical path. The outputs are
+  # already signed (secret-key-files), so they upload as they are.
+  enqueueHook = pkgs.writeShellScript "haganah-nix-cache-enqueue" ''
+    set -f
+    mkdir -p "$(dirname ${nixCache.queue})" 2>/dev/null
+    printf '%s\n' $OUT_PATHS >> ${nixCache.queue} 2>/dev/null
+    exit 0
+  '';
 in
 {
   options.haganah = {
@@ -45,9 +62,10 @@ in
             owner = "root";
             group = "wheel";
           };
-          # AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY for the bucket, read-only:
-          # machines substitute from the cache, and only CI uploads to it.
-          # The daemon alone reads it, so root-only.
+          # AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY for the bucket: the hosts'
+          # own token (read and write, separate from CI's so either can be
+          # revoked alone). Read by the nix daemon to substitute and by
+          # haganah-nix-cache-push to upload, both root, so root-only.
           haganah-nix-cache-r2 = libx.mkSecret "haganah-nix-cache-r2" {
             mode = "400";
             owner = "root";
@@ -149,13 +167,14 @@ in
               config.age.secrets.haganah-nix-cache-1.path
             ];
             trusted-users = [ "ci" ];
-            # The R2 cache CI fills (wayfinder's `.github/actions/nix`). Extra,
-            # not a replacement: cache.nixos.org and the cachix caches stay
-            # first, and a path missing here is just fetched or built. The
-            # bucket is private, so the daemon authenticates with the
-            # read-only credentials below.
+            # The R2 cache CI and every haganah host fill (wayfinder's
+            # `.github/actions/nix`, and the hook below). Extra, not a
+            # replacement: cache.nixos.org and the cachix caches stay first,
+            # and a path missing here is just fetched or built. The bucket is
+            # private, so the daemon authenticates with the credentials below.
             extra-substituters = [ nixCache.url ];
             extra-trusted-public-keys = [ nixCache.publicKey ];
+            post-build-hook = enqueueHook;
           };
           distributedBuilds = true;
         };
@@ -165,6 +184,58 @@ in
         # unit whose EnvironmentFile is missing.
         systemd.services.nix-daemon.serviceConfig.EnvironmentFile =
           "-${config.age.secrets.haganah-nix-cache-r2.path}";
+
+        # Drains the post-build hook's queue into the R2 cache. Started by the
+        # path unit whenever the hook appends, and by the timer as a retry.
+        #
+        # The queue is renamed before it is read, so the hook's appends during
+        # an upload land in a fresh file; a batch that fails to upload goes
+        # back onto the queue for the next run. Paths garbage-collected in
+        # the meantime are skipped. Never fails the unit on an upload error:
+        # the cache is an optimisation, and a failed unit would only nag.
+        systemd.services.haganah-nix-cache-push = {
+          description = "Upload locally built store paths to the haganah R2 Nix cache";
+          path = [ config.nix.package pkgs.coreutils ];
+          serviceConfig = {
+            Type = "oneshot";
+            EnvironmentFile = "-${config.age.secrets.haganah-nix-cache-r2.path}";
+          };
+          script = ''
+            queue=${nixCache.queue}
+            if [ -z "''${AWS_ACCESS_KEY_ID:-}" ]; then
+              echo "no cache credentials on this host; leaving the queue alone"
+              exit 0
+            fi
+            [ -s "$queue" ] || exit 0
+            batch="$queue.$(date +%s%N)"
+            mv "$queue" "$batch"
+            mapfile -t paths < <(sort -u "$batch" | while read -r p; do [ -e "$p" ] && echo "$p"; done)
+            if [ "''${#paths[@]}" -eq 0 ]; then
+              rm -f "$batch"
+              exit 0
+            fi
+            echo "uploading ''${#paths[@]} paths"
+            if nix copy --to '${nixCache.pushUrl}' "''${paths[@]}"; then
+              rm -f "$batch"
+            else
+              echo "upload failed; requeueing ''${#paths[@]} paths"
+              cat "$batch" >> "$queue"
+              rm -f "$batch"
+            fi
+          '';
+        };
+        systemd.paths.haganah-nix-cache-push = {
+          wantedBy = [ "multi-user.target" ];
+          pathConfig.PathModified = nixCache.queue;
+        };
+        systemd.timers.haganah-nix-cache-push = {
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnBootSec = "5min";
+            OnUnitInactiveSec = "30min";
+          };
+        };
+        systemd.tmpfiles.rules = [ "d ${builtins.dirOf nixCache.queue} 0700 root root -" ];
 
       }
       (lib.mkIf cfg.enableTailscale {
