@@ -20,6 +20,18 @@ let
     queue = "/var/lib/haganah-nix-cache/queue";
   };
 
+  # rabin, the one x86_64 haganah host, builds x86_64 closures for the rest
+  # over ssh-ng (it serves its store with nix.sshServe, host/rabin). Reached
+  # over Tailscale. The public half of the haganah-builder-key age secret
+  # is the key rabin accepts; rabin's host key is the one secrets.nix names.
+  builder = {
+    hostName = "rabin";
+    address = "100.73.51.55";
+    hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAeofWvYHMVo+FKERUYbIpTsWzFP3EJ7j20bsc9pwByi";
+    clientKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMDUBkw3sVHJEfWADN1kyFCNDYQGevdKzj6ZF7u/Lbfz haganah-builder";
+  };
+  isBuilder = config.networking.hostName == builder.hostName;
+
   # nix's post-build hook. It runs synchronously after every build, blocking
   # the build loop, and a non-zero exit fails the build — so it only records
   # the outputs and never fails; the upload happens in
@@ -42,6 +54,10 @@ in
 
     enableTailscale = lib.mkEnableOption "Enable Tailscale" // {
       default = true;
+    };
+
+    useRemoteBuilder = lib.mkEnableOption "building x86_64-linux derivations on rabin" // {
+      default = !isBuilder;
     };
   };
 
@@ -238,6 +254,42 @@ in
         systemd.tmpfiles.rules = [ "d ${builtins.dirOf nixCache.queue} 0700 root root -" ];
 
       }
+      (lib.mkIf isBuilder {
+        nix.sshServe = {
+          enable = true;
+          protocol = "ssh-ng";
+          write = true;
+          # Remote builds hand rabin derivations, which only a trusted user
+          # may build; the forced command keeps the key to nix-daemon --stdio.
+          trusted = true;
+          keys = [ builder.clientKey ];
+        };
+      })
+      (lib.mkIf cfg.useRemoteBuilder {
+        age.secrets.haganah-builder-key = libx.mkSecret "haganah-builder-key" {
+          mode = "400";
+          owner = "root";
+          group = "root";
+        };
+
+        nix.buildMachines = [{
+          hostName = builder.address;
+          protocol = "ssh-ng";
+          sshUser = "nix-ssh";
+          sshKey = config.age.secrets.haganah-builder-key.path;
+          systems = [ "x86_64-linux" ];
+          maxJobs = 4;
+          supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        }];
+        # rabin fetches what it can from the caches itself rather than having
+        # it all copied up from here.
+        nix.settings.builders-use-substitutes = true;
+
+        programs.ssh.knownHosts.rabin = {
+          hostNames = [ builder.hostName builder.address ];
+          publicKey = builder.hostKey;
+        };
+      })
       (lib.mkIf cfg.enableTailscale {
         services.tailscale = {
           enable = true;

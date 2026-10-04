@@ -31,4 +31,7 @@ in
   "haganah-nix-cache-1.age".publicKeys = users ++ machines;
   "haganah-nix-cache-r2.age".publicKeys = users ++ machines;
   "ci-private-key.age".publicKeys = users ++ machines;
+  # The key the haganah hosts' nix daemons use to reach rabin as a remote
+  # builder (nix.sshServe there, nix.buildMachines everywhere else).
+  "haganah-builder-key.age".publicKeys = users ++ machines;
 }
