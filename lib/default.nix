@@ -36,6 +36,21 @@ let lib = inputs.nixpkgs.lib; in rec {
   mkHosts = hosts: lib.mergeAttrsList (map mkHost hosts);
 
 
+  # The whole home config, minus `username`/`stateVersion` (passed via extraSpecialArgs).
+  # Exported as homeModules.default so other flakes can layer machine-specific modules on top.
+  homeModule = {
+    imports = [
+      inputs.catppuccin.homeModules.catppuccin
+      ../home
+    ];
+    nixpkgs.overlays = [
+      localOverlays.default
+      inputs.agenix.overlays.default
+      # Built against pi's own pinned nixpkgs, not ours.
+      (final: _: { pi = inputs.pi.packages.${final.stdenv.hostPlatform.system}.default; })
+    ];
+  };
+
   mkHostHome = { username, host }: {
     "${username}@${host.config.networking.hostName}" = inputs.home-manager.lib.homeManagerConfiguration {
       inherit (host) pkgs;
@@ -43,16 +58,7 @@ let lib = inputs.nixpkgs.lib; in rec {
         inherit username inputs stateVersion;
       };
 
-      modules = [
-        inputs.catppuccin.homeModules.catppuccin
-        ({ ... }: {
-          nixpkgs.overlays = [
-            localOverlays.default
-            inputs.agenix.overlays.default
-          ];
-        })
-        ../home
-      ];
+      modules = [ homeModule ];
     };
   };
 

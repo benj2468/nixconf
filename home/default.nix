@@ -9,6 +9,7 @@
     ./programs/tmux.nix
     ./programs/direnv.nix
     ./programs/starship.nix
+    ./programs/pi.nix
   ];
 
   catppuccin = {

@@ -14,6 +14,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pi.url = "github:earendil-works/pi/stable";
+
     # Dev things
 
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -88,6 +90,7 @@
             }
           ];
           overlays = localOverlays;
+          homeModules.default = libx.homeModule;
         };
       perSystem = { pkgs, system, config, ... }: {
 
