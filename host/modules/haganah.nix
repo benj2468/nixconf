@@ -201,6 +201,15 @@ in
         systemd.services.nix-daemon.serviceConfig.EnvironmentFile =
           "-${config.age.secrets.haganah-nix-cache-r2.path}";
 
+        # Root's nix (`sudo nixos-rebuild`, `sudo nix ...`) would otherwise
+        # open the store directly and substitute in sudo's scrubbed
+        # environment, without the credentials above, failing every R2
+        # request. Send it through the daemon like every other user. The
+        # daemon reads nix.conf too and would then connect to itself, so it
+        # alone keeps the local store; NIX_CONFIG overrides nix.conf.
+        nix.settings.store = "daemon";
+        systemd.services.nix-daemon.environment.NIX_CONFIG = "store = local";
+
         # Drains the post-build hook's queue into the R2 cache. Started by the
         # path unit whenever the hook appends, and by the timer as a retry.
         #
